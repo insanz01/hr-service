@@ -2,265 +2,275 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 from datetime import datetime
+import os
+import threading
+import queue
+from werkzeug.utils import secure_filename
 from database import init_db, get_db_connection
-from models import User, Todo
+from models import User, Todo, Document, Job
+import rag
+import llm
+from tasks import process_uploaded_file_task, run_job_task
+
+# Gunakan path absolut sesuai permintaan
+UPLOAD_DIR = r'd:\DEVELOPMENT\interview\hr-service\uploads'
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Dokumen Case Study Brief (ground truth untuk project report)
+CASE_STUDY_PATH = r'd:\DEVELOPMENT\interview\hr-service\docs\case_study_text.txt'
 
 app = Flask(__name__)
 CORS(app)
+
+# ========== Upload worker setup ==========
+upload_queue = queue.Queue(maxsize=100)
+
+
+def _read_pdf_text(path):
+    try:
+        from PyPDF2 import PdfReader
+        reader = PdfReader(path)
+        return "\n\n".join((p.extract_text() or '') for p in reader.pages)
+    except Exception:
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception:
+            return ''
+
+
+def _process_uploaded_file(doc_id, path, doc_type):
+    try:
+        text = _read_pdf_text(path)
+        sidecar = f"{path}.txt"
+        with open(sidecar, 'w', encoding='utf-8') as f:
+            f.write(text or '')
+        # Ingest ke Chroma untuk RAG
+        rag.ingest_text(f"doc:{doc_id}", text or '', metadata={'path': path, 'doc_type': doc_type})
+    except Exception:
+        pass
+
+
+def _upload_worker():
+    while True:
+        task = upload_queue.get()
+        try:
+            _process_uploaded_file(task['doc_id'], task['path'], task['doc_type'])
+        finally:
+            upload_queue.task_done()
+
+
+# Mulai worker thread
+_upload_thread = threading.Thread(target=_upload_worker, daemon=True)
+_upload_thread.start()
 
 @app.route('/')
 def home():
     return jsonify({
         'message': 'Selamat datang di Flask API Minimalis',
-        'version': '1.0.0',
+        'version': '1.2.0',
         'endpoints': {
             'users': '/api/users',
             'todos': '/api/todos',
             'user_detail': '/api/users/<id>',
-            'todo_detail': '/api/todos/<id>'
+            'todo_detail': '/api/todos/<id>',
+            'upload': '/upload',
+            'evaluate': '/evaluate',
+            'result': '/result/<id>',
+            'ingest': '/ingest'
         }
     })
 
-@app.route('/api/users', methods=['GET'])
-def get_users():
-    try:
-        conn = get_db_connection()
-        users = conn.execute('SELECT * FROM users').fetchall()
-        conn.close()
-
-        result = []
-        for user in users:
-            result.append({
-                'id': user['id'],
-                'name': user['name'],
-                'email': user['email'],
-                'created_at': user['created_at']
-            })
-
-        return jsonify({'users': result})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/users', methods=['POST'])
-def create_user():
+# ========= Ingest Endpoint (manual) =========
+@app.route('/ingest', methods=['POST'])
+def ingest_manual():
     try:
         data = request.get_json()
-
-        if not data or not 'name' in data or not 'email' in data:
-            return jsonify({'error': 'Name dan email harus diisi'}), 400
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO users (name, email) VALUES (?, ?)',
-            (data['name'], data['email'])
-        )
-        conn.commit()
-        user_id = cursor.lastrowid
-        conn.close()
-
-        return jsonify({
-            'id': user_id,
-            'name': data['name'],
-            'email': data['email'],
-            'message': 'User berhasil dibuat'
-        }), 201
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/users/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    try:
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
-        conn.close()
-
-        if user is None:
-            return jsonify({'error': 'User tidak ditemukan'}), 404
-
-        return jsonify({
-            'id': user['id'],
-            'name': user['name'],
-            'email': user['email'],
-            'created_at': user['created_at']
-        })
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    try:
-        data = request.get_json()
-
         if not data:
-            return jsonify({'error': 'Data harus disediakan'}), 400
-
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
-
-        if user is None:
-            conn.close()
-            return jsonify({'error': 'User tidak ditemukan'}), 404
-
-        name = data.get('name', user['name'])
-        email = data.get('email', user['email'])
-
-        conn.execute(
-            'UPDATE users SET name = ?, email = ? WHERE id = ?',
-            (name, email, user_id)
-        )
-        conn.commit()
-        conn.close()
-
-        return jsonify({
-            'id': user_id,
-            'name': name,
-            'email': email,
-            'message': 'User berhasil diupdate'
-        })
-
+            return jsonify({'error': 'Body harus JSON'}), 400
+        path = data.get('path')
+        doc_type = data.get('doc_type', 'system')
+        title = data.get('title')
+        if not path or not os.path.exists(path):
+            return jsonify({'error': 'path tidak valid'}), 400
+        doc_id = rag.ingest_file(path, doc_type=doc_type, title=title)
+        return jsonify({'id': doc_id}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
+# ========= Upload Endpoint =========
+@app.route('/upload', methods=['POST'])
+def upload_documents():
     try:
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+        if 'cv' not in request.files or 'report' not in request.files:
+            return jsonify({'error': 'Form harus berisi file cv dan report'}), 400
 
-        if user is None:
-            conn.close()
-            return jsonify({'error': 'User tidak ditemukan'}), 404
+        cv_file = request.files['cv']
+        report_file = request.files['report']
 
-        conn.execute('DELETE FROM users WHERE id = ?', (user_id,))
-        conn.commit()
-        conn.close()
+        if cv_file.filename == '' or report_file.filename == '':
+            return jsonify({'error': 'Nama file tidak boleh kosong'}), 400
 
-        return jsonify({'message': 'User berhasil dihapus'})
+        cv_name = secure_filename(cv_file.filename)
+        cv_path = os.path.join(UPLOAD_DIR, f"cv_{datetime.now().strftime('%Y%m%d%H%M%S')}_{cv_name}")
+        cv_file.save(cv_path)
+        cv_id = Document.create('cv', cv_name, cv_path)
+        try:
+            # Kirim ke Celery worker
+            process_uploaded_file_task.delay(cv_id, cv_path, 'cv')
+        except Exception:
+            # Fallback ke queue lokal jika broker tidak tersedia
+            upload_queue.put({'doc_id': cv_id, 'path': cv_path, 'doc_type': 'cv'})
 
+        report_name = secure_filename(report_file.filename)
+        report_path = os.path.join(UPLOAD_DIR, f"report_{datetime.now().strftime('%Y%m%d%H%M%S')}_{report_name}")
+        report_file.save(report_path)
+        report_id = Document.create('report', report_name, report_path)
+        try:
+            process_uploaded_file_task.delay(report_id, report_path, 'report')
+        except Exception:
+            upload_queue.put({'doc_id': report_id, 'path': report_path, 'doc_type': 'report'})
+
+        return jsonify({'cv_id': cv_id, 'report_id': report_id}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/todos', methods=['GET'])
-def get_todos():
-    try:
-        user_id = request.args.get('user_id')
-        conn = get_db_connection()
+# ========= Simple Evaluation Pipeline (Background) =========
 
-        if user_id:
-            todos = conn.execute('SELECT * FROM todos WHERE user_id = ?', (user_id,)).fetchall()
+def _load_case_study_text() -> str:
+    try:
+        with open(CASE_STUDY_PATH, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception:
+        return ''
+
+
+def _mock_llm_cv(cv_text, job_title):
+    match_rate = min(1.0, max(0.0, len(cv_text) / 5000.0))
+    feedback = f"CV dievaluasi untuk '{job_title}'. Panjang teks {len(cv_text)} karakter."
+    return match_rate, feedback
+
+
+def _mock_llm_project(report_text, case_brief_text):
+    wa = {w for w in ''.join(c.lower() if c.isalnum() or c.isspace() else ' ' for c in report_text).split() if len(w) >= 4}
+    wb = {w for w in ''.join(c.lower() if c.isalnum() or c.isspace() else ' ' for c in case_brief_text).split() if len(w) >= 4}
+    sim = (len(wa & wb) / max(1, min(len(wa), len(wb)))) if wa and wb else 0.0
+    if sim >= 0.6:
+        score = 5.0
+    elif sim >= 0.45:
+        score = 4.0
+    elif sim >= 0.3:
+        score = 3.0
+    elif sim >= 0.15:
+        score = 2.0
+    else:
+        score = 1.0
+    feedback = (
+        f"Project Report dibandingkan dengan Case Study Brief, kemiripan ~{round(sim*100)}%. "
+        "Pertimbangkan memperjelas bagian prompt chaining, RAG, dan error handling sesuai brief."
+    )
+    return score, feedback
+
+
+def _run_job(job_id):
+    try:
+        Job.update_status(job_id, 'processing')
+        job = Job.get_by_id(job_id)
+        if not job:
+            Job.update_status(job_id, 'failed', error_message='Job tidak ditemukan')
+            return
+
+        cv_row = Document.get_by_id(job['cv_id']) if job['cv_id'] else None
+        report_row = Document.get_by_id(job['report_id']) if job['report_id'] else None
+
+        cv_sidecar = f"{cv_row['path']}.txt" if cv_row else None
+        report_sidecar = f"{report_row['path']}.txt" if report_row else None
+
+        if cv_sidecar and os.path.exists(cv_sidecar):
+            with open(cv_sidecar, 'r', encoding='utf-8') as f:
+                cv_text = f.read()
         else:
-            todos = conn.execute('SELECT * FROM todos').fetchall()
+            cv_text = _read_pdf_text(cv_row['path']) if cv_row else ''
 
-        conn.close()
+        if report_sidecar and os.path.exists(report_sidecar):
+            with open(report_sidecar, 'r', encoding='utf-8') as f:
+                report_text = f.read()
+        else:
+            report_text = _read_pdf_text(report_row['path']) if report_row else ''
 
-        result = []
-        for todo in todos:
-            result.append({
-                'id': todo['id'],
-                'title': todo['title'],
-                'description': todo['description'],
-                'completed': bool(todo['completed']),
-                'user_id': todo['user_id'],
-                'created_at': todo['created_at']
-            })
+        case_brief_text = _load_case_study_text()
 
-        return jsonify({'todos': result})
+        # RAG retrieval (opsional): ambil snippet terkait untuk prompt LLM
+        cv_snippets = [d['document'] for d in rag.query(job['job_title'] or '', n_results=3)]
+        report_snippets = [d['document'] for d in rag.query('project scoring prompt chaining RAG error handling', n_results=3)]
+
+        if llm.available():
+            cv_res = llm.evaluate_cv(cv_text, job['job_title'] or '', cv_snippets)
+            pr_res = llm.evaluate_project(report_text, case_brief_text, report_snippets)
+            overall = llm.synthesize_overall(cv_res, pr_res)
+            result = overall.dict()
+        else:
+            cv_match_rate, cv_feedback = _mock_llm_cv(cv_text, job['job_title'] or '')
+            project_score, project_feedback = _mock_llm_project(report_text, case_brief_text)
+            overall_summary = "Kandidat menunjukkan kecocokan sebagian, disarankan menambah pengalaman RAG dan error handling."
+            result = {
+                'cv_match_rate': round(cv_match_rate, 2),
+                'cv_feedback': cv_feedback,
+                'project_score': round(project_score, 1),
+                'project_feedback': project_feedback,
+                'overall_summary': overall_summary
+            }
+
+        Job.update_status(job_id, 'completed', result_json=json.dumps(result))
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        Job.update_status(job_id, 'failed', error_message=str(e))
 
-@app.route('/api/todos', methods=['POST'])
-def create_todo():
+# ========= Evaluate Endpoint =========
+@app.route('/evaluate', methods=['POST'])
+def evaluate():
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Body harus JSON'}), 400
 
-        if not data or not 'title' in data or not 'user_id' in data:
-            return jsonify({'error': 'Title dan user_id harus diisi'}), 400
+        job_title = data.get('job_title')
+        cv_id = data.get('cv_id')
+        report_id = data.get('report_id')
 
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE id = ?', (data['user_id'],)).fetchone()
+        if not job_title or not cv_id or not report_id:
+            return jsonify({'error': 'job_title, cv_id, dan report_id wajib diisi'}), 400
 
-        if user is None:
-            conn.close()
-            return jsonify({'error': 'User tidak ditemukan'}), 404
+        job_id = Job.create(job_title, cv_id, report_id)
+        # Jalankan evaluasi via Celery; fallback ke thread lokal bila gagal
+        try:
+            run_job_task.delay(job_id)
+        except Exception:
+            t = threading.Thread(target=_run_job, args=(job_id,), daemon=True)
+            t.start()
 
-        cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO todos (title, description, user_id, completed) VALUES (?, ?, ?, ?)',
-            (data['title'], data.get('description', ''), data['user_id'], False)
-        )
-        conn.commit()
-        todo_id = cursor.lastrowid
-        conn.close()
-
-        return jsonify({
-            'id': todo_id,
-            'title': data['title'],
-            'description': data.get('description', ''),
-            'completed': False,
-            'user_id': data['user_id'],
-            'message': 'Todo berhasil dibuat'
-        }), 201
-
+        return jsonify({'id': job_id, 'status': 'queued'}), 202
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/todos/<int:todo_id>', methods=['PUT'])
-def update_todo(todo_id):
+# ========= Result Endpoint =========
+@app.route('/result/<int:job_id>', methods=['GET'])
+def get_result(job_id):
     try:
-        data = request.get_json()
+        job = Job.get_by_id(job_id)
+        if not job:
+            return jsonify({'error': 'Job tidak ditemukan'}), 404
 
-        conn = get_db_connection()
-        todo = conn.execute('SELECT * FROM todos WHERE id = ?', (todo_id,)).fetchone()
-
-        if todo is None:
-            conn.close()
-            return jsonify({'error': 'Todo tidak ditemukan'}), 404
-
-        title = data.get('title', todo['title'])
-        description = data.get('description', todo['description'])
-        completed = data.get('completed', todo['completed'])
-
-        conn.execute(
-            'UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?',
-            (title, description, completed, todo_id)
-        )
-        conn.commit()
-        conn.close()
-
-        return jsonify({
-            'id': todo_id,
-            'title': title,
-            'description': description,
-            'completed': bool(completed),
-            'user_id': todo['user_id'],
-            'message': 'Todo berhasil diupdate'
-        })
-
+        status = job['status']
+        if status in ['queued', 'processing']:
+            return jsonify({'id': job_id, 'status': status})
+        elif status == 'completed':
+            result = json.loads(job['result_json']) if job['result_json'] else {}
+            return jsonify({'id': job_id, 'status': status, 'result': result})
+        else:
+            return jsonify({'id': job_id, 'status': status, 'error': job['error_message'] or 'Unknown error'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/todos/<int:todo_id>', methods=['DELETE'])
-def delete_todo(todo_id):
-    try:
-        conn = get_db_connection()
-        todo = conn.execute('SELECT * FROM todos WHERE id = ?', (todo_id,)).fetchone()
-
-        if todo is None:
-            conn.close()
-            return jsonify({'error': 'Todo tidak ditemukan'}), 404
-
-        conn.execute('DELETE FROM todos WHERE id = ?', (todo_id,))
-        conn.commit()
-        conn.close()
-
-        return jsonify({'message': 'Todo berhasil dihapus'})
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
+# ========= Existing error handlers =========
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Endpoint tidak ditemukan'}), 404
@@ -270,5 +280,13 @@ def internal_error(error):
     return jsonify({'error': 'Terjadi kesalahan internal'}), 500
 
 if __name__ == '__main__':
+    # Ingest Case Study Brief secara otomatis ke Chroma saat startup
+    try:
+        if os.path.exists(CASE_STUDY_PATH) and not rag.has_id('case_study_brief'):
+            with open(CASE_STUDY_PATH, 'r', encoding='utf-8') as f:
+                rag.ingest_text('case_study_brief', f.read(), metadata={'doc_type': 'case_brief', 'path': CASE_STUDY_PATH})
+    except Exception:
+        pass
+
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)

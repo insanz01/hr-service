@@ -234,3 +234,76 @@ class Todo:
 
         conn.close()
         return count
+
+# Model untuk documents
+class Document:
+    def __init__(self, id=None, doc_type=None, filename=None, path=None, created_at=None):
+        self.id = id
+        self.doc_type = doc_type
+        self.filename = filename
+        self.path = path
+        self.created_at = created_at
+
+    @staticmethod
+    def create(doc_type, filename, path):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO documents (doc_type, filename, path) VALUES (?, ?, ?)',
+            (doc_type, filename, path)
+        )
+        conn.commit()
+        doc_id = cursor.lastrowid
+        conn.close()
+        return doc_id
+
+    @staticmethod
+    def get_by_id(doc_id):
+        conn = get_db_connection()
+        row = conn.execute('SELECT * FROM documents WHERE id = ?', (doc_id,)).fetchone()
+        conn.close()
+        return row
+
+# Model untuk jobs
+class Job:
+    def __init__(self, id=None, job_title=None, cv_id=None, report_id=None, status='queued', result_json=None, error_message=None, created_at=None, updated_at=None):
+        self.id = id
+        self.job_title = job_title
+        self.cv_id = cv_id
+        self.report_id = report_id
+        self.status = status
+        self.result_json = result_json
+        self.error_message = error_message
+        self.created_at = created_at
+        self.updated_at = updated_at
+
+    @staticmethod
+    def create(job_title, cv_id, report_id):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO jobs (job_title, cv_id, report_id, status) VALUES (?, ?, ?, ?)',
+            (job_title, cv_id, report_id, 'queued')
+        )
+        conn.commit()
+        job_id = cursor.lastrowid
+        conn.close()
+        return job_id
+
+    @staticmethod
+    def get_by_id(job_id):
+        conn = get_db_connection()
+        row = conn.execute('SELECT * FROM jobs WHERE id = ?', (job_id,)).fetchone()
+        conn.close()
+        return row
+
+    @staticmethod
+    def update_status(job_id, status, result_json=None, error_message=None):
+        conn = get_db_connection()
+        conn.execute(
+            'UPDATE jobs SET status = ?, result_json = ?, error_message = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            (status, result_json, error_message, job_id)
+        )
+        conn.commit()
+        conn.close()
+        return True

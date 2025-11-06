@@ -37,6 +37,34 @@ def init_db():
             )
         ''')
 
+        # Membuat tabel documents untuk menyimpan file CV dan Project Report
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS documents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                doc_type TEXT NOT NULL, -- 'cv' atau 'report'
+                filename TEXT NOT NULL,
+                path TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # Membuat tabel jobs untuk evaluasi asinkron
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS jobs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_title TEXT,
+                cv_id INTEGER,
+                report_id INTEGER,
+                status TEXT DEFAULT 'queued', -- queued | processing | completed | failed
+                result_json TEXT,
+                error_message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (cv_id) REFERENCES documents (id),
+                FOREIGN KEY (report_id) REFERENCES documents (id)
+            )
+        ''')
+
         conn.commit()
         conn.close()
         print("Database berhasil diinisialisasi!")
