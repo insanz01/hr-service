@@ -13,6 +13,10 @@ def make_celery() -> Celery:
     backend = os.getenv("REDIS_BACKEND", os.getenv("REDIS_URL", "redis://localhost:6379/1"))
 
     celery = Celery("hr_service", broker=broker, backend=backend)
+
+    # Auto-discover tasks (disabled for now, manual import)
+    # celery.autodiscover_tasks(['tasks'])
+
     celery.conf.update(
         task_serializer="json",
         result_serializer="json",
@@ -20,6 +24,13 @@ def make_celery() -> Celery:
         timezone=os.getenv("TZ", "UTC"),
         enable_utc=True,
         worker_max_tasks_per_child=1000,
+        task_routes={
+            'upload.process': {'queue': 'upload'},
+            'evaluate.run_job': {'queue': 'evaluation'},
+        },
+        task_default_queue='default',
+        task_default_exchange='default',
+        task_default_routing_key='default',
     )
     return celery
 

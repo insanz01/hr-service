@@ -2,7 +2,24 @@ import os
 import json
 from typing import Optional
 
-from PyPDF2 import PdfReader
+# Try to import the best PDF libraries in order of preference
+try:
+    import fitz  # PyMuPDF - best choice
+    _PDF_READER = 'pymupdf'
+except ImportError:
+    try:
+        import pdfplumber
+        _PDF_READER = 'pdfplumber'
+    except ImportError:
+        try:
+            from pypdf import PdfReader
+            _PDF_READER = 'pypdf'
+        except ImportError:
+            try:
+                from PyPDF2 import PdfReader  # Fallback
+                _PDF_READER = 'pypdf2'
+            except ImportError:
+                _PDF_READER = None
 
 import rag
 import llm
@@ -15,12 +32,86 @@ CASE_STUDY_PATH = os.path.join(DOCS_DIR, "case_study_text.txt")
 
 
 def _read_pdf_text(pdf_path: str) -> str:
-    reader = PdfReader(pdf_path)
-    parts = []
-    for page in reader.pages:
-        text = page.extract_text() or ""
-        parts.append(text)
-    return "\n".join(parts).strip()
+    """Extract text from PDF using the best available library.
+
+    Tries libraries in order: PyMuPDF > pdfplumber > pypdf > PyPDF2
+    Falls back to reading as plain text if PDF reading fails.
+    """
+    if not os.path.exists(pdf_path):
+        return ""
+
+    # Try PDF readers in order of preference
+    if _PDF_READER == 'pymupdf':
+        return _read_with_pymupdf(pdf_path)
+    elif _PDF_READER == 'pdfplumber':
+        return _read_with_pdfplumber(pdf_path)
+    elif _PDF_READER in ('pypdf', 'pypdf2'):
+        return _read_with_pypdf(pdf_path)
+    else:
+        # Fallback: try reading as plain text
+        return _read_as_text(pdf_path)
+
+def _read_with_pymupdf(pdf_path: str) -> str:
+    """Extract text using PyMuPDF (fastest and most accurate)."""
+    try:
+        doc = fitz.open(pdf_path)
+        text_parts = []
+        for page in doc:
+            text = page.get_text()
+            if text.strip():
+                text_parts.append(text)
+        doc.close()
+        return "\n".join(text_parts).strip()
+    except Exception as e:
+        print(f"PyMuPDF failed for {pdf_path}: {e}")
+        return _read_as_text(pdf_path)
+
+def _read_with_pdfplumber(pdf_path: str) -> str:
+    """Extract text using pdfplumber (great for tables and forms)."""
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            text_parts = []
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text and text.strip():
+                    text_parts.append(text)
+            return "\n".join(text_parts).strip()
+    except Exception as e:
+        print(f"pdfplumber failed for {pdf_path}: {e}")
+        return _read_as_text(pdf_path)
+
+def _read_with_pypdf(pdf_path: str) -> str:
+    """Extract text using pypdf/PyPDF2."""
+    try:
+        reader = PdfReader(pdf_path)
+        text_parts = []
+        for page in reader.pages:
+            text = page.extract_text() or ""
+            if text.strip():
+                text_parts.append(text)
+        return "\n".join(text_parts).strip()
+    except Exception as e:
+        print(f"pypdf/PyPDF2 failed for {pdf_path}: {e}")
+        return _read_as_text(pdf_path)
+
+def _read_as_text(pdf_path: str) -> str:
+    """Fallback: read file as plain text."""
+    try:
+        with open(pdf_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+            # Clean up any PDF-like artifacts
+            lines = content.split('\n')
+            clean_lines = []
+            for line in lines:
+                # Skip PDF headers and artifacts
+                if any(marker in line.lower() for marker in ['%%eof', 'pdf-', 'obj', 'endobj', 'stream', 'endstream']):
+                    continue
+                if line.strip() and len(line.strip()) > 1:
+                    clean_lines.append(line.strip())
+            return '\n'.join(clean_lines)
+    except Exception as e:
+        print(f"Failed to read {pdf_path} as text: {e}")
+        return ""
 
 
 def process_uploaded_file(doc_id: int, path: str, doc_type: str) -> None:
@@ -65,10 +156,7 @@ def process_uploaded_file(doc_id: int, path: str, doc_type: str) -> None:
 
 
 def run_job(job_id: int) -> None:
-    """Run end-to-end evaluation using LLM + RAG.
-
-    Falls back to mock evaluation if LLM not available.
-    """
+    """Run end-to-end evaluation using LLM + RAG with built-in fallback mechanism."""
     # Sinkron dengan main.py: update status dan ambil job
     try:
         Job.update_status(job_id, 'processing')
@@ -127,27 +215,12 @@ def run_job(job_id: int) -> None:
     except Exception:
         report_snippets = []
 
-    # LLM evaluation
+    # LLM evaluation with built-in fallback mechanism
     try:
-        if llm.available():
-            cv_res = llm.evaluate_cv(cv_text=cv_text, case_brief=case_text, context=cv_snippets)
-            proj_res = llm.evaluate_project(report_text=report_text, case_brief=case_text, context=report_snippets)
-            overall_res = llm.synthesize_overall(cv=cv_res, project=proj_res, case_brief=case_text)
-            result = overall_res.dict()
-        else:
-            # Fallback mock selaras dengan main.py
-            cv_match_rate = min(1.0, max(0.0, len(cv_text) / 5000.0))
-            cv_feedback = f"CV dievaluasi untuk '{job['job_title'] or ''}'. Panjang teks {len(cv_text)} karakter."
-            project_score = min(5.0, max(1.0, len(report_text) / 1000.0))
-            project_feedback = f"Project report dianalisis, panjang teks {len(report_text)} karakter."
-            overall_summary = "Kandidat menunjukkan kecocokan sebagian, disarankan menambah pengalaman RAG dan error handling."
-            result = {
-                'cv_match_rate': round(cv_match_rate, 2),
-                'cv_feedback': cv_feedback,
-                'project_score': round(project_score, 1),
-                'project_feedback': project_feedback,
-                'overall_summary': overall_summary
-            }
+        cv_res = llm.evaluate_cv(cv_text=cv_text, case_brief=case_text, context=cv_snippets)
+        proj_res = llm.evaluate_project(report_text=report_text, case_brief=case_text, context=report_snippets)
+        overall_res = llm.synthesize_overall(cv=cv_res, project=proj_res, case_brief=case_text)
+        result = overall_res.dict()
 
         Job.update_status(job_id, 'completed', result_json=json.dumps(result))
     except Exception as e:

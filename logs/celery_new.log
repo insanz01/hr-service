@@ -1,0 +1,95 @@
+ 
+ -------------- celery@error v5.5.3 (immunity)
+--- ***** ----- 
+-- ******* ---- Linux-6.17.7-arch1-1-x86_64-with-glibc2.42 2025-11-06 20:53:49
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         hr_service:0x7fe1f027a900
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/1
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> default          exchange=default(direct) key=default
+                .> evaluation       exchange=evaluation(direct) key=evaluation
+                .> upload           exchange=upload(direct) key=upload
+
+[tasks]
+
+
+[2025-11-06 20:53:49,947: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2025-11-06 20:53:49,950: INFO/MainProcess] mingle: searching for neighbors
+[2025-11-06 20:53:50,960: INFO/MainProcess] mingle: all alone
+[2025-11-06 20:53:51,009: INFO/MainProcess] celery@error ready.
+[2025-11-06 20:53:51,015: ERROR/MainProcess] Received unregistered task of type 'evaluate.run_job'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+https://docs.celeryq.dev/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[3], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (78b)
+
+The full contents of the message headers:
+{'lang': 'py', 'task': 'evaluate.run_job', 'id': '81fb88b9-f1b3-43c8-98ce-14dbaebfeeae', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '81fb88b9-f1b3-43c8-98ce-14dbaebfeeae', 'parent_id': None, 'argsrepr': '(3,)', 'kwargsrepr': '{}', 'origin': 'gen25309@error', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}}
+
+The delivery info for this task is:
+{'exchange': '', 'routing_key': 'evaluation'}
+Traceback (most recent call last):
+  File "/home/error/.local/share/mise/installs/python/3.13.7/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 662, in on_task_received
+    strategy = strategies[type_]
+               ~~~~~~~~~~^^^^^^^
+KeyError: 'evaluate.run_job'
+[2025-11-06 20:53:51,023: ERROR/MainProcess] Received unregistered task of type 'upload.process'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+https://docs.celeryq.dev/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[5, "/home/error/Research/be/hr-service/uploads/cv_20251106205303_cv_1_john_doe.pdf", "cv"], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (166b)
+
+The full contents of the message headers:
+{'lang': 'py', 'task': 'upload.process', 'id': '9b2e442f-9b0d-4dc6-b385-8783addb0ab7', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': '9b2e442f-9b0d-4dc6-b385-8783addb0ab7', 'parent_id': None, 'argsrepr': "(5, '/home/error/Research/be/hr-service/uploads/cv_20251106205303_cv_1_john_doe.pdf', 'cv')", 'kwargsrepr': '{}', 'origin': 'gen25309@error', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}}
+
+The delivery info for this task is:
+{'exchange': '', 'routing_key': 'upload'}
+Traceback (most recent call last):
+  File "/home/error/.local/share/mise/installs/python/3.13.7/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 662, in on_task_received
+    strategy = strategies[type_]
+               ~~~~~~~~~~^^^^^^^
+KeyError: 'upload.process'
+[2025-11-06 20:53:51,027: ERROR/MainProcess] Received unregistered task of type 'upload.process'.
+The message has been ignored and discarded.
+
+Did you remember to import the module containing this task?
+Or maybe you're using relative imports?
+
+Please see
+https://docs.celeryq.dev/en/latest/internals/protocol.html
+for more information.
+
+The full contents of the message body was:
+b'[[6, "/home/error/Research/be/hr-service/uploads/report_20251106205303_project_report_1_excellent.pdf", "report"], {}, {"callbacks": null, "errbacks": null, "chain": null, "chord": null}]' (187b)
+
+The full contents of the message headers:
+{'lang': 'py', 'task': 'upload.process', 'id': 'a79ddfd9-254f-4747-8922-515ab5b16e37', 'shadow': None, 'eta': None, 'expires': None, 'group': None, 'group_index': None, 'retries': 0, 'timelimit': [None, None], 'root_id': 'a79ddfd9-254f-4747-8922-515ab5b16e37', 'parent_id': None, 'argsrepr': "(6, '/home/error/Research/be/hr-service/uploads/report_20251106205303_project_report_1_excellent.pdf', 'report')", 'kwargsrepr': '{}', 'origin': 'gen25309@error', 'ignore_result': False, 'replaced_task_nesting': 0, 'stamped_headers': None, 'stamps': {}}
+
+The delivery info for this task is:
+{'exchange': '', 'routing_key': 'upload'}
+Traceback (most recent call last):
+  File "/home/error/.local/share/mise/installs/python/3.13.7/lib/python3.13/site-packages/celery/worker/consumer/consumer.py", line 662, in on_task_received
+    strategy = strategies[type_]
+               ~~~~~~~~~~^^^^^^^
+KeyError: 'upload.process'
+
+worker: Warm shutdown (MainProcess)

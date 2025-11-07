@@ -1,0 +1,41 @@
+Starting Celery worker with tasks...
+Registered tasks: ['celery.map', 'celery.backend_cleanup', 'upload.process', 'celery.chain', 'celery.starmap', 'celery.accumulate', 'celery.chord', 'celery.chunks', 'celery.chord_unlock', 'evaluate.run_job', 'celery.group']
+ 
+ -------------- celery@error v5.5.3 (immunity)
+--- ***** ----- 
+-- ******* ---- Linux-6.17.7-arch1-1-x86_64-with-glibc2.42 2025-11-06 21:21:41
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         hr_service:0x7f504199e900
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/1
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> default          exchange=default(direct) key=default
+                .> evaluation       exchange=evaluation(direct) key=evaluation
+                .> upload           exchange=upload(direct) key=upload
+
+[tasks]
+  . evaluate.run_job
+  . upload.process
+
+[2025-11-06 21:21:42,112: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2025-11-06 21:21:42,118: INFO/MainProcess] mingle: searching for neighbors
+[2025-11-06 21:21:43,129: INFO/MainProcess] mingle: all alone
+[2025-11-06 21:21:43,171: INFO/MainProcess] celery@error ready.
+[2025-11-06 21:23:44,415: INFO/MainProcess] Task upload.process[446e414f-6d3c-48c5-887f-2ef17773e894] received
+[2025-11-06 21:23:44,421: INFO/MainProcess] Task upload.process[123c036a-7383-4246-b8a6-8a522ce038a4] received
+[2025-11-06 21:23:52,740: INFO/MainProcess] Task evaluate.run_job[69404a7c-9034-40ba-8177-f7cfc4d5f949] received
+[2025-11-06 21:26:58,425: INFO/MainProcess] Task upload.process[a1704a7a-094b-4a8e-b40b-dd107c4bd116] received
+[2025-11-06 21:26:58,431: INFO/MainProcess] Task upload.process[b1c33efd-025c-4d95-9665-c33585468ff8] received
+[2025-11-06 21:27:17,248: INFO/MainProcess] Task evaluate.run_job[706b9cf3-a83f-4a99-8645-e3891bec5deb] received
+
+worker: Warm shutdown (MainProcess)
+
+worker: Warm shutdown (MainProcess)
+
+worker: Warm shutdown (MainProcess)
+
+worker: Warm shutdown (MainProcess)

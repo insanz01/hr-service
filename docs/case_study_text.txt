@@ -1,393 +1,256 @@
-C a s e  S t u d y  B r i e f
-Hello! Thank you for applying with us as a backend developer. This mini project should be completed within 5 days after you 
-have received this document. Please spare your time to complete this project with the best results. We are really pleased to 
-answer your questions if there are unclear things. 
-Objective
-Your mission is to build a backend service that automates the initial screening of a job application. The service will receive a 
-candidate's CV and a project report, evaluate them against a specific job description and a case study brief, and produce a 
-structured, AI-generated evaluation report.
-Core Logic & Data Flow
+# Case Study Brief - Backend Engineer with AI Focus
+**Date:** November 2024
+**Duration:** 5 days
+**Role:** Backend Engineer (AI/ML Integration)
+
+## Hello Candidate!
+
+Thank you for applying with us as a Backend Engineer. This mini project should be completed within 5 days after you have received this document. Please spare your time to complete this project with the best results. We are really pleased to answer your questions if there are unclear things.
+
+## Objective
+
+Your mission is to build a backend service that automates the initial screening of job applications. The service will receive a candidate's CV and a project report, evaluate them against a specific job description and a case study brief, and produce a structured, AI-generated evaluation report.
+
+**We are specifically looking for candidates who demonstrate strong backend engineering capabilities combined with modern AI/ML integration skills.**
+
+## Core Logic & Data Flow
+
 The system operates with a clear separation of inputs and reference documents:
-Candidate-Provided Inputs (The Data to be Evaluated):
-Candidate CV: The candidate's resume (PDF).
-Project Report: The candidate's project report to our take-home case study (PDF)
-System-Internal Documents (The "Ground Truth" for Comparison):
-Job Description: A document detailing the requirements and responsibilities for the role — You can use the job description 
-you’re currently applying. This document will be used as ground truth for Candidate CV.
-To make sure the vector retrieval is accurate enough, you might need to ingest a few job description documents as well.
-Case Study Brief: This document. Used as ground truth for Project Report. (PDF)
-Scoring Rubric: A predefined set of parameters for evaluating CV and Report, each has it’s own documents. (PDF)
-We want to see your ability to combine backend engineering with AI workflows (prompt design, LLM chaining, retrieval, 
-resilience).
-Deliverables
-1. Backend Service (API endpoints)
-Implement a backend service with at least the following RESTful API endpoints:
-POST /upload
+
+### Candidate-Provided Inputs (The Data to be Evaluated)
+- **Candidate CV:** The candidate's resume (PDF)
+- **Project Report:** The candidate's project report to our take-home case study (PDF)
+
+### System-Internal Documents (The "Ground Truth" for Comparison)
+- **Job Description:** Requirements for Backend Engineer with AI focus
+- **Case Study Brief:** This document. Used as ground truth for Project Report
+- **Scoring Rubric:** Predefined parameters for evaluating CV and Report
+
+**We want to see your ability to combine backend engineering with AI workflows (prompt design, LLM chaining, retrieval, resilience).**
+
+## Deliverables
+
+### 1. Backend Service (API endpoints)
+Implement a backend service with the following RESTful API endpoints:
+
+#### POST /upload
 Accepts multipart/form-data containing the Candidate CV and Project Report (PDF).
-Stores these files, return each with it’s own ID for later processing.
-POST /evaluate
-Triggers the asynchronous AI evaluation pipeline. Receives input job title (string), and both document ID.
-Immediately returns a job ID to track the evaluation process.
+- Stores these files with secure filenames and timestamps
+- Returns each with its own ID for later processing
+- Processes files asynchronously for text extraction and RAG ingestion
+
+#### POST /evaluate
+Triggers the asynchronous AI evaluation pipeline.
+- Receives input job title (string), cv_id, and report_id
+- Immediately returns a job ID to track the evaluation process
+```json
 {
   "id": "456",
   "status": "queued"
 }
-GET /result/{id}
-Retrieves the status and result of an evaluation job. This endpoint should reflect the asynchronous, multi-stage nature 
-of the process.
-Possible responses:
-While queued or processing
+```
+
+#### GET /result/{id}
+Retrieves the status and result of an evaluation job.
+Should reflect the asynchronous, multi-stage nature of the process.
+
+**Possible responses:**
+While queued or processing:
+```json
 {
   "id": "456",
   "status": "queued" | "processing"
 }
-Once completed 1.
- 2.
- 1.
- ◦
- 2.
- 3.
- •
- ◦
- ◦
- •
- ◦
- ◦
- •
- ◦
- ◦
- ▪
- ▪
+```
 
+Once completed:
+```json
 {
   "id": "456",
   "status": "completed",
   "result": {
-    "cv_match_rate": 0.82,
-    "cv_feedback": "Strong in backend and cloud, limited AI integration experience...",
-    "project_score": 4.5,
-    "project_feedback": "Meets prompt chaining requirements, lacks error handling robustness...",
-    "overall_summary": "Good candidate fit, would benefit from deeper RAG knowledge..."
+    "cv_match_rate": 0.85,
+    "cv_feedback": "Strong backend fundamentals with demonstrated AI/ML experience...",
+    "project_score": 4.7,
+    "project_feedback": "Excellent RAG implementation with proper error handling...",
+    "overall_summary": "Highly recommended candidate with strong AI/backend hybrid expertise..."
   }
 }
-2. Evaluation Pipeline
-Design and implement an AI-driven pipeline which will be triggered by [POST] /evaluate endpoint. Should consist these key 
-Components:
-RAG (Context Retrieval)
-Ingest all System-Internal Documents (Job Description, Case Study Brief, Both Scoring Rubrics) into a vector 
-database.
-Retrieve relevant sections and inject into prompts (e.g., “for CV scoring” vs “for project scoring”).
-Prompt Design & LLM Chaining
-The pipeline should consists of
-CV Evaluation
-Parse the candidate’s CV into structured data.
-Retrieve relevant information from both Job Description and CV Scoring Rubrics.
-Use an LLM to get these result: cv_match_rate & cv_feedback
-Project Report Evaluation
-Parse the candidate's Project Report into structured data.
-Retrieve relevant information from both Case Study Brief and CV Scoring Rubrics.
-Use an LLM to get these result: project_score & project_feedback 
-Final Analysis
-Use a final LLM call to synthesize the outputs from previous steps into a concise overall_summary.
-Long-Running Process Handling
-POST /evaluate should not block until LLM Chaining finishes.
-Store task, return job ID, allow GET /result/{id} to check later periodically.
-Error Handling & Randomness Control
-Simulate any edge cases you can think of and how well your service can handle them.
-Simulate failures from LLM API (timeouts, rate limit).
-Implement retries/back-off.
-Control LLM temperature or add validation layer to keep responses stable.
-3. Standardized Evaluation Parameters
-Define at least these scoring parameters:
-CV Evaluation (Match Rate)
-Technical Skills Match (backend, databases, APIs, cloud, AI/LLM exposure).
-Experience Level (years, project complexity).
-Relevant Achievements (impact, scale).
-Cultural Fit (communication, learning attitude).
-Project Deliverable Evaluation
-Correctness (meets requirements: prompt design, chaining, RAG, handling errors).
-Code Quality (clean, modular, testable).
-Resilience (handles failures, retries). •
- ◦
- ◦
- •
- ◦
- ▪
- ▪
- ▪
- ◦
- ▪
- ▪
- ▪
- ◦
- ▪
- •
- ◦
- ◦
- •
- ◦
- ◦
- ◦
- ◦
- •
- •
- •
- •
- •
- •
- •
+```
 
-Documentation (clear README, explanation of trade-offs).
-Creativity / Bonus (optional improvements like authentication, deployment, dashboards).
-Each parameter can be scored 1–5, then aggregated to final score.
-Requirements
-Use any backend framework (Rails, Django, Node.js, etc.).
-Use a proper LLM service (e.g., OpenAI, Gemini, or OpenRouter). There are several free LLM API providers available.
-Use a simple vector DB (e.g. ChromaDB, Qdrant, etc) or RAG-as-a-service (e.g. Ragie, S3 Vector, etc), any of your own 
-choice.
-Provide README with run instructions + explanation of design choices.
-Provide the documents together with their ingestion scripts in the repository for reproducability purposes. •
- •
- •
- •
- •
- •
- •
+### 2. Evaluation Pipeline
+Design and implement an AI-driven pipeline triggered by POST /evaluate endpoint:
 
-S c o r i n g  R u b r i c  f o r  C a s e  S t u d y  E v a l u a t i o n
-3. Overall Candidate Evaluation
-CV Match Rate: Weighted Average (1–5) → Convert to 0-1 decimal (×0.2).
-Project Score: Weighted Average (1–5)
-Overall Summary: Service should return 3–5 sentences (strengths, gaps, recommendations).Technical Skills Match (Weight: 
-40%)Alignment with job requirements (backend, 
-databases, APIs, cloud, AI/LLM).1 = Irrelevant skills, 2 = Few overlaps, 3 = 
-Partial match, 4 = Strong match, 5 = 
-Excellent match + AI/LLM exposure
-Experience Level (Weight: 
-25%)Years of experience and project complexity. 1 = <1 yr / trivial projects, 2 = 1–2 yrs, 3 = 
-2–3 yrs with mid-scale projects, 4 = 3–4 
-yrs solid track record, 5 = 5+ yrs / high-
-impact projects
-Relevant Achievements 
-(Weight: 20%)Impact of past work (scaling, performance, 
-adoption).1 = No clear achievements, 2 = Minimal 
-improvements, 3 = Some measurable 
-outcomes, 4 = Significant contributions, 
-5 = Major measurable impact
-Cultural / Collaboration Fit 
-(Weight: 15%)Communication, learning mindset, 
-teamwork/leadership.1 = Not demonstrated, 2 = Minimal, 3 = 
-Average, 4 = Good, 5 = Excellent and 
-well-demonstrated
-Correctness (Prompt & 
-Chaining) (Weight: 30%)Implements prompt design, LLM chaining, RAG 
-context injection.1 = Not implemented, 2 = Minimal 
-attempt, 3 = Works partially, 4 = Works 
-correctly, 5 = Fully correct + thoughtful
-Code Quality & Structure 
-(Weight: 25%)Clean, modular, reusable, tested. 1 = Poor, 2 = Some structure, 3 = Decent 
-modularity, 4 = Good structure + some 
-tests, 5 = Excellent quality + strong tests
-Resilience & Error Handling 
-(Weight: 20%)Handles long jobs, retries, randomness, API 
-failures.1 = Missing, 2 = Minimal, 3 = Partial 
-handling, 4 = Solid handling, 5 = Robust, 
-production-ready
-Documentation & Explanation 
-(Weight: 15%)README clarity, setup instructions, trade-off 
-explanations.1 = Missing, 2 = Minimal, 3 = Adequate, 4 
-= Clear, 5 = Excellent + insightful
-Creativity / Bonus (Weight: 10%)Extra features beyond requirements. 1 = None, 2 = Very basic, 3 = Useful 
-extras, 4 = Strong enhancements, 5 = 
-Outstanding creativityParameter Description Scoring Guide
-Parameter Description Scoring GuideCV Match Evaluation (1–5 scale per parameter)
-Project Deliverable Evaluation (1–5 scale per parameter)
- •
- •
- •
+#### RAG (Context Retrieval)
+- Ingest all System-Internal Documents into a vector database
+- Retrieve relevant sections and inject into prompts
+- Use context retrieval for CV scoring vs project scoring
 
-S t u d y  C a s e  S u b m i s s i o n  T e m p l a t e
-P l e a s e  u s e  t h i s  t e m p l a t e  t o  d o c u m e n t  y o u r  s o l u t i o n .  S u b m i t  i t  a s  a  P D F  f i l e  a l o n g  w i t h  y o u r  p r o j e c t  r e p o s i t o r y .
-1 .  T i t l e
-2 .  C a n d i d a t e  I n f o r m a t i o n
-F u l l  N a m e :
-E m a i l  A d d r e s s :
-3 .  R e p o s i t o r y  L i n k
-P r o v i d e  a  l i n k  t o  y o u r  G i t H u b  r e p o s i t o r y .
-⚠   I m p o r t a n t :  D o  n o t  u s e  t h e  w o r d  R a k a m i n  a n y w h e r e  i n  y o u r  r e p o s i t o r y  n a m e ,  c o m m i t s ,  o r  d o c u m e n t a t i o n .  T h i s  i s  t o  
-r e d u c e  p l a g i a r i s m  r i s k .
-E x a m p l e :  g i t h u b . c o m / u s e r n a m e / a i - c v - e v a l u a t o r
-4 .  A p p r o a c h  &  D e s i g n  ( M a i n  S e c t i o n )
-T e l l  t h e  s t o r y  o f  h o w  y o u  a p p r o a c h e d  t h i s  c h a l l e n g e .  W e  w a n t  t o  u n d e r s t a n d  y o u r  t h i n k i n g  p r o c e s s ,  n o t  j u s t  t h e  c o d e .  P l e a s e  
-i n c l u d e :
-I n i t i a l  P l a n
-H o w  y o u  b r o k e  d o w n  t h e  r e q u i r e m e n t s .
-K e y  a s s u m p t i o n s  o r  s c o p e  b o u n d a r i e s .
-S y s t e m  &  D a t a b a s e  D e s i g n
-A P I  e n d p o i n t s  d e s i g n .
-D a t a b a s e  s c h e m a  ( d i a g r a m  o r  e x p l a n a t i o n ) .
-J o b  q u e u e  /  l o n g - r u n n i n g  t a s k  h a n d l i n g .
-L L M  I n t e g r a t i o n
-W h y  y o u  c h o s e  a  s p e c i f i c  L L M  o r  p r o v i d e r .
-P r o m p t  d e s i g n  d e c i s i o n s .
-C h a i n i n g  l o g i c  ( i f  a n y ) .
-R A G  ( r e t r i e v a l ,  e m b e d d i n g s ,  v e c t o r  D B )  s t r a t e g y .
-P r o m p t i n g  S t r a t e g y  ( e x a m p l e s  o f  y o u r  a c t u a l  p r o m p t s )
-R e s i l i e n c e  &  E r r o r  H a n d l i n g
-H o w  y o u  h a n d l e d  A P I  f a i l u r e s ,  t i m e o u t s ,  o r  r a n d o m n e s s .
-A n y  r e t r y ,  b a c k o f f ,  o r  f a l l b a c k  l o g i c .
-E d g e  C a s e s  C o n s i d e r e d
-W h a t  u n u s u a l  i n p u t s  o r  s c e n a r i o s  y o u  t h o u g h t  a b o u t .
-H o w  y o u  t e s t e d  t h e m .
-✍  T h i s  i s  y o u r  c h a n c e  t o  b e  a  s t o r y t e l l e r .  I m a g i n e  y o u ’ r e  p r e s e n t i n g  t o  a  C T O ,  c l a r i t y  a n d  r e a s o n i n g  m a t t e r  m o r e  t h a n  
-b u z z w o r d s .
-5 .  R e s u l t s  &  R e f l e c t i o n
-O u t c o m e
-W h a t  w o r k e d  w e l l  i n  y o u r  i m p l e m e n t a t i o n ?
-W h a t  d i d n ’ t  w o r k  a s  e x p e c t e d ?
-E v a l u a t i o n  o f  R e s u l t s
-I f  t h e  e v a l u a t i o n  s c o r e s / o u t p u t s  w e r e  b a d  o r  i n c o n s i s t e n t ,  e x p l a i n  w h y .
-I f  t h e y  w e r e  g o o d ,  e x p l a i n  w h a t  m a d e  t h e m  s t a b l e .
-F u t u r e  I m p r o v e m e n t s
-W h a t  w o u l d  y o u  d o  d i f f e r e n t l y  w i t h  m o r e  t i m e ?
-W h a t  c o n s t r a i n t s  ( t i m e ,  t o o l s ,  A P I  l i m i t s )  a f f e c t e d  y o u r  s o l u t i o n ? •
- •
- •
- •
- •
- •
-  ◦
-  ◦
- •
-  ◦
-  ◦
-  ◦
- •
-  ◦
-  ◦
-  ◦
-  ◦
- •
- •
-  ◦
-  ◦
- •
-  ◦
-  ◦
- •
-  ◦
-  ◦
- •
-  ◦
-  ◦
- •
-  ◦
-  ◦
+#### Prompt Design & LLM Chaining
+**CV Evaluation Pipeline:**
+1. Parse candidate's CV into structured data
+2. Retrieve relevant information from Job Description and AI/ML requirements
+3. Use LLM to extract: cv_match_rate & cv_feedback with AI/ML focus
 
-6 .  S c r e e n s h o t s  o f  R e a l  R e s p o n s e s
-S h o w  r e a l  J S O N  r e s p o n s e  f r o m  y o u r  A P I  u s i n g  y o u r  o w n  C V  +  P r o j e c t  R e p o r t .
-M i n i m u m :
-/evaluate  →  r e t u r n s  j o b _ i d  +  s t a t u s
-/result/:id  →  r e t u r n s  f i n a l  e v a l u a t i o n  ( s c o r e s  +  f e e d b a c k )
-P a s t e  s c r e e n s h o t s  o r  P o s t m a n / t e r m i n a l  l o g s .
-7 .  ( O p t i o n a l )  B o n u s  W o r k
-I f  y o u  a d d e d  e x t r a  f e a t u r e s ,  d e s c r i b e  t h e m  h e r e . •
- •
-  ◦
-  ◦
- •
+**Project Report Evaluation Pipeline:**
+1. Parse candidate's Project Report into structured data
+2. Retrieve relevant information from Case Study Brief and AI implementation requirements
+3. Use LLM to evaluate: project_score & project_feedback with AI/backend hybrid focus
 
-J o b  D e s c r i p t i o n  -  P r o d u c t  E n g i n e e r  ( B a c k e n d )
-2 0 2 5
-Rakamin is hiring a Product Engineer (Backend) to work on Rakamin. We're looking for dedicated engineers who write code 
-they’re proud of and who are eager to keep scaling and improving complex systems, including those powered by AI.
-A b o u t  t h e  J o b
-You'll be building new product features alongside a frontend engineer and product manager using our Agile methodology, as 
-well as addressing issues to ensure our apps are robust and our codebase is clean. As a Product Engineer, you'll write clean, 
-efficient code to enhance our product's codebase in meaningful ways.
-In addition to classic backend work, this role also touches on building AI-powered systems, where you’ll design and orchestrate 
-how large language models (LLMs) integrate into Rakamin’s product ecosystem.
-Here are some real examples of the work in our team:
-Collaborating with frontend engineers and 3rd parties to build robust backend solutions that support highly configurable 
-platforms and cross-platform integration.
-Developing and maintaining server-side logic for central database, ensuring high performance throughput and response 
-time.
-Designing and fine-tuning AI prompts that align with product requirements and user contexts.
-Building LLM chaining flows, where the output from one model is reliably passed to and enriched by another.
-Implementing Retrieval-Augmented Generation (RAG) by embedding and retrieving context from vector databases, then 
-injecting it into AI prompts to improve accuracy and relevance.
-Handling long-running AI processes gracefully — including job orchestration, async background workers, and retry 
-mechanisms.
-Designing safeguards for uncontrolled scenarios: managing failure cases from 3rd party APIs and mitigating the 
-randomness/nondeterminism of LLM outputs.
-Leveraging AI tools and workflows to increase team productivity (e.g., AI-assisted code generation, automated QA, internal 
-bots).
-Writing reusable, testable, and efficient code to improve the functionality of our existing systems.
-Strengthening our test coverage with RSpec to build robust and reliable web apps.
-Conducting full product lifecycles, from idea generation to design, implementation, testing, deployment, and maintenance.
-Providing input on technical feasibility, timelines, and potential product trade-offs, working with business divisions.
-Actively engaging with users and stakeholders to understand their needs and translate them into backend and AI-driven 
-improvements.
-A b o u t  Y o u
-We’re looking for candidates with a strong track record of working on backend technologies of web apps, ideally with exposure 
-to AI/LLM development or a strong desire to learn.
-You should have experience with backend languages and frameworks (Node.js, Django, Rails), as well as modern backend 
-tooling and technologies such as:
-Database management (MySQL, PostgreSQL, MongoDB)
-RESTful APIs
-Security compliance
-Cloud technologies (AWS, Google Cloud, Azure)
-Server-side languages (Java, Python, Ruby, or JavaScript)
-Understanding of frontend technologies
-User authentication and authorization between multiple systems, servers, and environments
-Scalable application design principles
-Creating database schemas that represent and support business processes
-Implementing automated testing platforms and unit tests
-Familiarity with LLM APIs, embeddings, vector databases and prompt design best practices
-We're not big on credentials, so a Computer Science degree or graduating from a prestigious university isn't something we 
-emphasize. We care about what you can do and how you do it, not how you got here. •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
- •
+**Final Analysis:**
+1. Use final LLM call to synthesize outputs into overall_summary
+2. Focus on backend quality + AI/ML integration capabilities
 
-While you'll report to a CTO directly, Rakamin is a company where  thrive. We're quick to trust that you can do 
-it, and here to support you. You can expect to be counted on and do your best work and build a career here.M a n a g e r s  o f  O n e
-This is a remote job. You're free to work where you work best: home office, co-working space, coffee shops. To ensure time 
-zone overlap with our current team and maintain well communication, we're only looking for people based in Indonesia.
-B e n e f i t s  &  P e r k s
-Our benefits support a life well-lived away from work. Ample time off and all the resources you need to support you in doing the 
-best work of your career:
-P a i d  t i m e  o f f: Rakamin offers 1 7  d a y s  of vacation and personal days. You can take a day off without any specific reason, 
-whether you want to hang out, take a vacation, or just lay in bed.
-Learning benefits with total R p 2 9  m i l l i o n  p e r  y e a r:
-Rp6 million per year to subscribe to courses, buy books, or any resources you need to boost your skills and knowledge.
-O'Reilly subscription worth Rp8 million per year — We subscribe to O'Reilly for you so you can read the newest books, 
-videos, conferences, and courses related to technology, data, design, business, and soft skills.
-Access to all our learning module Bootcamps and Short Courses worth Rp15 million per year, so you can always upskill 
-and reskill for a better life and career.
-D e v i c e  o w n e r s h i p: We provide a Rp7 million budget per year so you can purchase any device to support your productivity. 1.
- 2.
- ◦
- ◦
- ◦
- 3.
+#### Long-Running Process Handling
+- POST /evaluate should not block until processing completes
+- Store task, return job ID, allow periodic status checks
+- Implement proper job queue and worker management
+
+#### Error Handling & Resilience
+- Handle LLM API failures (timeouts, rate limits)
+- Implement retry mechanisms with exponential backoff
+- Control LLM temperature for response consistency
+- Design fallback mechanisms when AI services are unavailable
+
+### 3. Standardized Evaluation Parameters
+
+Define comprehensive scoring parameters focused on Backend + AI/LLM integration:
+
+#### CV Evaluation (Match Rate)
+- **Backend Technical Skills (50%):** Proficiency in core backend technologies
+  - Programming languages (Python, Node.js, Go, etc.)
+  - Databases (PostgreSQL, MySQL, MongoDB, Redis)
+  - API Design & Development (RESTful, GraphQL, WebSocket)
+  - Cloud Platforms & Services (AWS, GCP, Azure)
+  - System Architecture & Design Patterns
+
+- **AI/ML Skills (30%):** Practical experience with AI technologies
+  - LLM APIs (OpenAI, Gemini, Anthropic, etc.)
+  - Vector Databases (ChromaDB, Pinecone, Qdrant)
+  - Embedding Models and Vector Operations
+  - Prompt Engineering & Optimization
+  - Model Integration in Production
+
+- **Experience & Complexity (15%):** Years and project sophistication
+  - Project scale (number of users, data volume, transaction complexity)
+  - System design and architectural decisions
+  - Performance optimization and scaling experience
+
+- **Relevant Achievements (5%):** Impact and measurable outcomes
+  - Performance improvements and optimizations
+  - System reliability and availability improvements
+  - Cost optimization and resource efficiency
+
+#### Project Deliverable Evaluation
+- **Correctness (35%):** Meets requirements with focus on AI/backend hybrid implementation
+  - Prompt design and LLM chaining implementation
+  - RAG system with context retrieval and injection
+  - Error handling for AI service failures
+  - Backend logic integration with AI workflows
+
+- **Code Quality & Architecture (25%):** Clean, maintainable, scalable code
+  - Clean code principles and best practices
+  - Modular architecture and design patterns
+  - Performance optimization and efficiency
+  - Database schema design and optimization
+
+- **Resilience (20%):** Robust error handling and system reliability
+  - Async processing and job orchestration
+  - Retry mechanisms and fallback strategies
+  - Monitoring and observability
+  - Production-ready deployment considerations
+
+- **Documentation & Communication (15%):** Clear technical documentation
+  - README with setup instructions and design explanations
+  - Architecture diagrams and trade-off discussions
+  - Code comments and API documentation
+  - Technical explanations for AI/backend integration
+
+- **Innovation & Bonus (5%):** Extra features beyond requirements
+  - Advanced AI features (multi-step chains, complex prompting)
+  - Creative solutions for hybrid backend/AI challenges
+  - Additional tools or utilities that enhance productivity
+
+## Expected Technical Outcomes
+
+### Backend Engineering Competencies
+- **Strong fundamental backend skills** with proven ability to build scalable systems
+- **Modern development practices** including automated testing and CI/CD
+- **System architecture knowledge** with understanding of distributed systems
+- **Performance optimization** and scalability considerations
+- **Security best practices** and data protection compliance
+
+### AI/ML Integration Skills
+- **Practical LLM experience** with real-world applications
+- **Prompt engineering expertise** with complex chain design
+- **Vector database usage** for RAG and semantic search
+- **AI system design** with understanding of production considerations
+- **Error handling** for AI service failures and edge cases
+
+### Hybrid Backend/AI Capabilities
+- **Seamless integration** between traditional backend and AI workflows
+- **Innovative solutions** that leverage AI to enhance backend functionality
+- **Future-oriented thinking** about technology evolution and AI adoption
+- **Practical problem-solving** with hybrid technical challenges
+
+## Success Criteria
+
+### Excellent Candidate (4.5-5.0)
+- Demonstrates mastery of both backend fundamentals and AI/LLM integration
+- Implements highly polished, production-ready system with comprehensive error handling
+- Shows innovative thinking in combining backend and AI technologies
+- Delivers clean, maintainable code with excellent documentation
+
+### Good Candidate (3.5-4.5)
+- Shows solid backend engineering skills with growing AI/ML expertise
+- Implements functional system with good error handling and resilience
+- Demonstrates understanding of core AI/backend integration concepts
+- Delivers well-structured code with adequate documentation
+
+### Basic Candidate (2.5-3.5)
+- Shows fundamental backend development skills
+- Implements basic system with some AI/LLM exposure or strong learning capability
+- Demonstrates basic understanding of integration concepts
+- Delivers working code with room for improvement in AI sophistication
+
+## Technical Requirements
+
+### Core Backend Technologies
+- **Programming Languages:** Python, Node.js, Java, or similar
+- **Databases:** PostgreSQL, MySQL, MongoDB, Redis
+- **API Development:** RESTful APIs, GraphQL, WebSocket
+- **Cloud Platforms:** AWS, Google Cloud, Azure
+- **Containerization:** Docker, Kubernetes
+- **Testing:** Unit tests, integration tests, end-to-end tests
+
+### AI/LLM Technologies
+- **LLM APIs:** OpenAI GPT, Google Gemini, Anthropic Claude
+- **Vector Databases:** ChromaDB, Pinecone, Qdrant, Weaviate
+- **Embedding Models:** OpenAI embeddings, sentence-transformers
+- **Prompt Engineering:** Advanced prompting techniques and strategies
+- **Model Integration:** Embedding models into production workflows
+
+### Development Practices
+- **Version Control:** Git with proper branching strategies
+- **Testing:** Comprehensive test coverage with multiple layers
+- **Documentation:** Clear README files and code documentation
+- **CI/CD:** Automated build, test, and deployment pipelines
+- **Code Quality:** Linting, formatting, and code review practices
+
+## We're Looking For
+
+**Technical Excellence:** Strong foundation in backend engineering with demonstrated ability to work with AI technologies
+
+**Innovation Mindset:** Creative problem-solver who can think beyond traditional boundaries and explore hybrid solutions
+
+**Learning Agility:** Continuous learner who stays current with evolving technology landscape
+
+**Collaboration Skills:** Effective communicator who can work well with cross-functional teams
+
+**Practical Experience:** Real-world application of both backend and AI technologies in production environments
+
+**We value demonstrated ability over theoretical knowledge. We're looking for candidates who can show what they can build and how they approach solving complex technical challenges.**
+
+---
+
+**This case study is designed to evaluate your skills in building robust, modern backend systems that intelligently integrate AI capabilities. Show us how you can combine traditional backend engineering with cutting-edge AI workflows!**

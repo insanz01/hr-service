@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>project_report_2_good</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="hr-screening-backend-service---project-implementation">HR
+Screening Backend Service - Project Implementation</h1>
+<p><strong>Candidate:</strong> Sarah Wilson <strong>Project
+Duration:</strong> 5 days <strong>Date:</strong> October 2024</p>
+<h2 id="project-overview">1. Project Overview</h2>
+<p>This project implements a backend service for automated CV screening
+that evaluates candidate applications against job requirements and case
+study briefings. The system uses AI integration with RAG
+(Retrieval-Augmented Generation) and comprehensive error handling.</p>
+<h2 id="system-design">2. System Design</h2>
+<h3 id="architecture">2.1 Architecture</h3>
+<p>The application uses Flask framework with the following
+components:</p>
+<pre><code>Flask Application (main.py)
+├── Database Layer (SQLite3)
+├── File Storage System
+├── Celery Workers (Background Processing)
+├── ChromaDB (Vector Storage)
+└── Gemini API (AI Evaluation)</code></pre>
+<h3 id="database-structure">2.2 Database Structure</h3>
+<p>Created three main tables:</p>
+<p><strong>Users Table:</strong> - id (PRIMARY KEY) - name (TEXT) -
+email (TEXT, UNIQUE) - created_at (TIMESTAMP)</p>
+<p><strong>Documents Table:</strong> - id (PRIMARY KEY) - doc_type
+(TEXT) - ‘cv’ or ‘report’ - filename (TEXT) - path (TEXT) - created_at
+(TIMESTAMP)</p>
+<p><strong>Jobs Table:</strong> - id (PRIMARY KEY) - job_title (TEXT) -
+cv_id (FOREIGN KEY) - report_id (FOREIGN KEY) - status (TEXT) -
+‘queued’, ‘processing’, ‘completed’, ‘failed’ - result_json (TEXT) -
+error_message (TEXT) - created_at (TIMESTAMP)</p>
+<h2 id="api-implementation">3. API Implementation</h2>
+<h3 id="upload-endpoint-post-upload">3.1 Upload Endpoint
+(<code>POST /upload</code>)</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/upload&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> upload_documents():</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">&#39;cv&#39;</span> <span class="kw">not</span> <span class="kw">in</span> request.files <span class="kw">or</span> <span class="st">&#39;report&#39;</span> <span class="kw">not</span> <span class="kw">in</span> request.files:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Form harus berisi file cv dan report&#39;</span>}), <span class="dv">400</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        cv_file <span class="op">=</span> request.files[<span class="st">&#39;cv&#39;</span>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        report_file <span class="op">=</span> request.files[<span class="st">&#39;report&#39;</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Secure filename and save files</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        cv_name <span class="op">=</span> secure_filename(cv_file.filename)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        cv_path <span class="op">=</span> os.path.join(UPLOAD_DIR, <span class="ss">f&quot;cv_</span><span class="sc">{</span>datetime<span class="sc">.</span>now()<span class="sc">.</span>strftime(<span class="st">&#39;%Y%m</span><span class="sc">%d</span><span class="st">%H%M%S&#39;</span>)<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>cv_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        cv_file.save(cv_path)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Create database records</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        cv_id <span class="op">=</span> Document.create(<span class="st">&#39;cv&#39;</span>, cv_name, cv_path)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Queue for processing</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>            process_uploaded_file_task.delay(cv_id, cv_path, <span class="st">&#39;cv&#39;</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            upload_queue.put({<span class="st">&#39;doc_id&#39;</span>: cv_id, <span class="st">&#39;path&#39;</span>: cv_path, <span class="st">&#39;doc_type&#39;</span>: <span class="st">&#39;cv&#39;</span>})</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;cv_id&#39;</span>: cv_id, <span class="st">&#39;report_id&#39;</span>: report_id}), <span class="dv">201</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<p><strong>Features:</strong> - Multipart form-data handling - Secure
+filename generation - Async file processing via Celery - Fallback to
+local queue if Celery unavailable</p>
+<h3 id="evaluation-endpoint-post-evaluate">3.2 Evaluation Endpoint
+(<code>POST /evaluate</code>)</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/evaluate&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate():</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> request.get_json()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        job_title <span class="op">=</span> data.get(<span class="st">&#39;job_title&#39;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        cv_id <span class="op">=</span> data.get(<span class="st">&#39;cv_id&#39;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        report_id <span class="op">=</span> data.get(<span class="st">&#39;report_id&#39;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> job_title <span class="kw">or</span> <span class="kw">not</span> cv_id <span class="kw">or</span> <span class="kw">not</span> report_id:</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;job_title, cv_id, dan report_id wajib diisi&#39;</span>}), <span class="dv">400</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        job_id <span class="op">=</span> Job.create(job_title, cv_id, report_id)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Start async processing</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            run_job_task.delay(job_id)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            t <span class="op">=</span> threading.Thread(target<span class="op">=</span>_run_job, args<span class="op">=</span>(job_id,), daemon<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            t.start()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;id&#39;</span>: job_id, <span class="st">&#39;status&#39;</span>: <span class="st">&#39;queued&#39;</span>}), <span class="dv">202</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="result-endpoint-get-resultid">3.3 Result Endpoint
+(<code>GET /result/{id}</code>)</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/result/&lt;int:job_id&gt;&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;GET&#39;</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_result(job_id):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        job <span class="op">=</span> Job.get_by_id(job_id)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> job:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Job tidak ditemukan&#39;</span>}), <span class="dv">404</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        status <span class="op">=</span> job[<span class="st">&#39;status&#39;</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> status <span class="kw">in</span> [<span class="st">&#39;queued&#39;</span>, <span class="st">&#39;processing&#39;</span>]:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;id&#39;</span>: job_id, <span class="st">&#39;status&#39;</span>: status})</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> status <span class="op">==</span> <span class="st">&#39;completed&#39;</span>:</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> json.loads(job[<span class="st">&#39;result_json&#39;</span>]) <span class="cf">if</span> job[<span class="st">&#39;result_json&#39;</span>] <span class="cf">else</span> {}</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;id&#39;</span>: job_id, <span class="st">&#39;status&#39;</span>: status, <span class="st">&#39;result&#39;</span>: result})</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;id&#39;</span>: job_id, <span class="st">&#39;status&#39;</span>: status, <span class="st">&#39;error&#39;</span>: job[<span class="st">&#39;error_message&#39;</span>] <span class="kw">or</span> <span class="st">&#39;Unknown error&#39;</span>}), <span class="dv">500</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<h2 id="ai-integration">4. AI Integration</h2>
+<h3 id="rag-system-implementation">4.1 RAG System Implementation</h3>
+<p>Using ChromaDB for vector storage and retrieval:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize ChromaDB</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>RAG_DIR <span class="op">=</span> os.path.join(os.path.dirname(<span class="va">__file__</span>), <span class="st">&#39;uploads&#39;</span>, <span class="st">&#39;chroma&#39;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>_client <span class="op">=</span> chromadb.PersistentClient(path<span class="op">=</span>RAG_DIR)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>_collection <span class="op">=</span> _client.get_or_create_collection(name<span class="op">=</span><span class="st">&quot;system_docs&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ingest_text(doc_id: <span class="bu">str</span>, text: <span class="bu">str</span>, metadata: Dict[<span class="bu">str</span>, Any] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> text:</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    _collection.add(documents<span class="op">=</span>[text], metadatas<span class="op">=</span>[metadata <span class="kw">or</span> {}], ids<span class="op">=</span>[doc_id])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> query(query_text: <span class="bu">str</span>, n_results: <span class="bu">int</span> <span class="op">=</span> <span class="dv">5</span>):</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> query_text:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> []</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> _collection.query(query_texts<span class="op">=</span>[query_text], n_results<span class="op">=</span>n_results)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [{<span class="st">&#39;document&#39;</span>: d, <span class="st">&#39;metadata&#39;</span>: m} <span class="cf">for</span> d, m <span class="kw">in</span> <span class="bu">zip</span>(res[<span class="st">&#39;documents&#39;</span>][<span class="dv">0</span>], res[<span class="st">&#39;metadatas&#39;</span>][<span class="dv">0</span>])]</span></code></pre></div>
+<h3 id="llm-integration-with-gemini">4.2 LLM Integration with
+Gemini</h3>
+<p>Created a simple wrapper for Gemini API:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> google.generativeai <span class="im">as</span> genai</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate_cv(cv_text, job_title, context_snippets):</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    prompt <span class="op">=</span> <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ss">    Evaluate this CV for the position: </span><span class="sc">{</span>job_title<span class="sc">}</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ss">    CV: </span><span class="sc">{</span>cv_text<span class="sc">}</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ss">    Context: </span><span class="sc">{</span>context_snippets<span class="sc">}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ss">    Provide match rate (0-1) and detailed feedback.</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ss">    &quot;&quot;&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> genai.GenerativeModel(<span class="st">&#39;gemini-pro&#39;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> model.generate_content(prompt)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parse_llm_response(response.text)</span></code></pre></div>
+<h3 id="prompt-chaining">4.3 Prompt Chaining</h3>
+<p>Implemented multi-stage evaluation:</p>
+<ol type="1">
+<li><strong>CV Evaluation:</strong> Analyze CV against job
+requirements</li>
+<li><strong>Project Evaluation:</strong> Compare project report with
+case study</li>
+<li><strong>Synthesis:</strong> Combine results into overall
+assessment</li>
+</ol>
+<h2 id="error-handling">5. Error Handling</h2>
+<h3 id="api-error-handling">5.1 API Error Handling</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.errorhandler</span>(<span class="dv">404</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> not_found(error):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Endpoint tidak ditemukan&#39;</span>}), <span class="dv">404</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">@app.errorhandler</span>(<span class="dv">500</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> internal_error(error):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Terjadi kesalahan internal&#39;</span>}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="background-processing-error-handling">5.2 Background Processing
+Error Handling</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="at">@celery.task</span>(name<span class="op">=</span><span class="st">&quot;evaluate.run_job&quot;</span>, bind<span class="op">=</span><span class="va">True</span>, autoretry_for<span class="op">=</span>(<span class="pp">Exception</span>,), retry_backoff<span class="op">=</span><span class="dv">10</span>, retry_kwargs<span class="op">=</span>{<span class="st">&quot;max_retries&quot;</span>: <span class="dv">5</span>})</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_job_task(<span class="va">self</span>, job_id: <span class="bu">int</span>):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        run_job(job_id<span class="op">=</span>job_id)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        Job.update_status(job_id, <span class="st">&#39;failed&#39;</span>, error_message<span class="op">=</span><span class="bu">str</span>(e))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="va">self</span>.retry(exc<span class="op">=</span>e, countdown<span class="op">=</span><span class="dv">60</span> <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> <span class="va">self</span>.request.retries))</span></code></pre></div>
+<h3 id="fallback-mechanisms">5.3 Fallback Mechanisms</h3>
+<ul>
+<li>Mock evaluation when LLM API is unavailable</li>
+<li>Local threading queue when Celery broker is down</li>
+<li>Graceful degradation with partial functionality</li>
+</ul>
+<h2 id="file-processing">6. File Processing</h2>
+<h3 id="pdf-text-extraction">6.1 PDF Text Extraction</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _read_pdf_text(path):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> PyPDF2 <span class="im">import</span> PdfReader</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        reader <span class="op">=</span> PdfReader(path)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;</span><span class="ch">\n\n</span><span class="st">&quot;</span>.join((p.extract_text() <span class="kw">or</span> <span class="st">&#39;&#39;</span>) <span class="cf">for</span> p <span class="kw">in</span> reader.pages)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&#39;&#39;</span></span></code></pre></div>
+<h3 id="async-file-ingestion">6.2 Async File Ingestion</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _process_uploaded_file(doc_id, path, doc_type):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        text <span class="op">=</span> _read_pdf_text(path)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        sidecar <span class="op">=</span> <span class="ss">f&quot;</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">.txt&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(sidecar, <span class="st">&#39;w&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            f.write(text <span class="kw">or</span> <span class="st">&#39;&#39;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Ingest to Chroma for RAG</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        rag.ingest_text(<span class="ss">f&quot;doc:</span><span class="sc">{</span>doc_id<span class="sc">}</span><span class="ss">&quot;</span>, text <span class="kw">or</span> <span class="st">&#39;&#39;</span>, metadata<span class="op">=</span>{<span class="st">&#39;path&#39;</span>: path, <span class="st">&#39;doc_type&#39;</span>: doc_type})</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code></pre></div>
+<h2 id="testing">7. Testing</h2>
+<h3 id="manual-testing">7.1 Manual Testing</h3>
+<p>Tested the complete workflow:</p>
+<ol type="1">
+<li><p><strong>Upload Documents:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/upload <span class="at">-F</span> <span class="st">&quot;cv=@cv.pdf&quot;</span> <span class="at">-F</span> <span class="st">&quot;report=@report.pdf&quot;</span></span></code></pre></div></li>
+<li><p><strong>Start Evaluation:</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/evaluate <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="at">-d</span> <span class="st">&#39;{&quot;job_title&quot;:&quot;Backend Engineer&quot;,&quot;cv_id&quot;:1,&quot;report_id&quot;:2}&#39;</span></span></code></pre></div></li>
+<li><p><strong>Check Results:</strong></p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:5000/result/1</span></code></pre></div></li>
+</ol>
+<h3 id="error-scenarios-tested">7.2 Error Scenarios Tested</h3>
+<ul>
+<li>Invalid file formats</li>
+<li>Missing required fields</li>
+<li>LLM API failures</li>
+<li>Database connection issues</li>
+<li>File upload size limits</li>
+</ul>
+<h2 id="deployment-setup">8. Deployment Setup</h2>
+<h3 id="environment-configuration">8.1 Environment Configuration</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .env file</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="va">GEMINI_API_KEY</span><span class="op">=</span>your_api_key_here</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="va">REDIS_URL</span><span class="op">=</span>redis://localhost:6379/0</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="va">REDIS_BACKEND</span><span class="op">=</span>redis://localhost:6379/1</span></code></pre></div>
+<h3 id="running-the-application">8.2 Running the Application</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install dependencies</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize database</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> database.py</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Start Redis (optional)</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-p</span> 6379:6379 redis:7-alpine</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Start Celery worker (optional)</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="ex">celery</span> <span class="at">-A</span> celery_app.celery worker <span class="at">-l</span> info <span class="at">--concurrency</span> 4</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Start Flask app</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> main.py</span></code></pre></div>
+<h2 id="performance-considerations">9. Performance Considerations</h2>
+<h3 id="async-processing">9.1 Async Processing</h3>
+<ul>
+<li>Celery workers for long-running tasks</li>
+<li>Queue management with proper prioritization</li>
+<li>Background processing for file ingestion</li>
+</ul>
+<h3 id="database-optimization">9.2 Database Optimization</h3>
+<ul>
+<li>Proper indexing on frequently queried columns</li>
+<li>Connection pooling for better performance</li>
+<li>Query optimization for large datasets</li>
+</ul>
+<h2 id="security-features">10. Security Features</h2>
+<h3 id="file-upload-security">10.1 File Upload Security</h3>
+<ul>
+<li>Filename sanitization with <code>secure_filename()</code></li>
+<li>File type validation</li>
+<li>Size limit considerations</li>
+</ul>
+<h3 id="api-security">10.2 API Security</h3>
+<ul>
+<li>Input validation and sanitization</li>
+<li>Error message sanitization</li>
+<li>Environment variable management</li>
+</ul>
+<h2 id="limitations-and-future-improvements">11. Limitations and Future
+Improvements</h2>
+<h3 id="current-limitations">11.1 Current Limitations</h3>
+<ul>
+<li>Limited document format support (PDF, TXT)</li>
+<li>Single language support (Indonesian/English)</li>
+<li>Basic UI/UX design</li>
+<li>Limited scalability without proper load balancing</li>
+</ul>
+<h3 id="future-enhancements">11.2 Future Enhancements</h3>
+<ul>
+<li>Support for more document formats (DOCX, PPTX)</li>
+<li>Multi-language capability</li>
+<li>Advanced analytics dashboard</li>
+<li>Real-time WebSocket updates</li>
+<li>Enhanced security with authentication</li>
+<li>Microservices decomposition</li>
+<li>Advanced prompt engineering</li>
+</ul>
+<h2 id="conclusion">12. Conclusion</h2>
+<p>The HR Screening Backend Service successfully implements the core
+requirements:</p>
+<p>✅ <strong>RESTful API endpoints</strong> for upload, evaluate, and
+result retrieval ✅ <strong>AI-driven pipeline</strong> with RAG and
+prompt chaining ✅ <strong>Long-running process handling</strong> with
+Celery workers ✅ <strong>Comprehensive error handling</strong> with
+fallback mechanisms ✅ <strong>Vector database integration</strong> for
+context retrieval ✅ <strong>Production-ready code</strong> with proper
+structure and documentation</p>
+<p>The system provides a solid foundation for automated candidate
+screening with room for future enhancements and improvements.</p>
+</body>
+</html>

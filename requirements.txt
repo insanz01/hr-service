@@ -1,8 +1,29 @@
+# Core Framework
 Flask==2.3.3
 Flask-CORS==4.0.0
 Werkzeug==2.3.7
-PyPDF2==3.0.1
-chromadb
-instructor
-google-generativeai
-celery[redis]
+
+# PDF Processing (optimized - use PyMuPDF instead of PyPDF2)
+PyMuPDF==1.24.5
+# Fallback: PyPDF2==3.0.1
+
+# NumPy compatibility - pin to 1.x for ChromaDB compatibility
+numpy<2.0,>=1.24.0
+
+# Database & Storage
+chromadb==0.4.22
+
+# AI/ML Dependencies
+instructor==1.3.5
+google-generativeai==0.8.3
+
+# Background Tasks
+celery[redis]==5.3.6
+
+# Data Validation
+pydantic==2.9.2
+
+# Development tools (optional)
+# pytest==7.4.3
+# pytest-cov==4.1.0
+# black==23.9.1
