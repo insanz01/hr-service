@@ -3,11 +3,15 @@ AI Engine Module untuk Evaluasi CV dan Project menggunakan Gemini + Instructor
 """
 
 import os
+import warnings
 import logging
 from typing import Optional, List, Any
 import instructor
 
 from pydantic import BaseModel, Field
+
+# Suppress SSL resource warnings
+warnings.filterwarnings("ignore", category=ResourceWarning, message=".*unclosed.*SSL.*")
 
 # Setup logging
 logger = logging.getLogger(__name__)

@@ -1,5 +1,10 @@
 import os
+import warnings
 from typing import List, Dict, Any
+
+# Suppress warnings
+warnings.filterwarnings("ignore", category=ResourceWarning, message=".*unclosed.*SSL.*")
+warnings.filterwarnings("ignore", message=".*Failed to send telemetry event.*")
 
 try:
     import chromadb

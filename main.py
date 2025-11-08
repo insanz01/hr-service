@@ -1,3 +1,4 @@
+import warnings
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
@@ -6,6 +7,11 @@ import os
 import threading
 import queue
 from werkzeug.utils import secure_filename
+
+# Suppress Flask development server warning
+warnings.filterwarnings(
+    "ignore", category=UserWarning, message=".*development server.*"
+)
 
 # Try to import core modules with error handling
 try:
@@ -173,7 +179,7 @@ def ingest_manual():
 
             # Save uploaded file temporarily
             filename = secure_filename(file.filename)
-            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             temp_path = os.path.join(UPLOAD_DIR, f"temp_ingest_{timestamp}_{filename}")
 
             print(f"💾 [INGEST] Saving uploaded file: {filename} -> {temp_path}")
@@ -246,7 +252,9 @@ def ingest_manual():
     except Exception as e:
         end_time = datetime.utcnow()
         processing_time = (end_time - start_time).total_seconds()
-        print(f"❌ [INGEST] Error occurred after {processing_time:.2f} seconds: {str(e)}")
+        print(
+            f"❌ [INGEST] Error occurred after {processing_time:.2f} seconds: {str(e)}"
+        )
         print(f"🔍 [INGEST] Error details: {type(e).__name__}")
         return jsonify({"error": str(e)}), 500
 
@@ -289,7 +297,7 @@ def upload_documents():
         print("💼 [UPLOAD] Processing CV file...")
         cv_start_time = datetime.utcnow()
         cv_name = secure_filename(cv_file.filename)
-        cv_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        cv_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         cv_path = os.path.join(UPLOAD_DIR, f"cv_{cv_timestamp}_{cv_name}")
 
         print(f"💾 [UPLOAD] Saving CV: {cv_name} -> {cv_path}")
@@ -312,8 +320,10 @@ def upload_documents():
         print("📄 [UPLOAD] Processing Report file...")
         report_start_time = datetime.utcnow()
         report_name = secure_filename(report_file.filename)
-        report_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        report_path = os.path.join(UPLOAD_DIR, f"report_{report_timestamp}_{report_name}")
+        report_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        report_path = os.path.join(
+            UPLOAD_DIR, f"report_{report_timestamp}_{report_name}"
+        )
 
         print(f"💾 [UPLOAD] Saving Report: {report_name} -> {report_path}")
         report_file.save(report_path)
@@ -331,12 +341,18 @@ def upload_documents():
         )
 
         report_processing_time = (datetime.utcnow() - report_start_time).total_seconds()
-        print(f"⏱️ [UPLOAD] Report processing completed in {report_processing_time:.2f} seconds")
+        print(
+            f"⏱️ [UPLOAD] Report processing completed in {report_processing_time:.2f} seconds"
+        )
 
         # Calculate total processing time
         total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-        print(f"📊 [UPLOAD] File sizes - CV: {cv_file_size} bytes, Report: {report_file_size} bytes")
-        print(f"⏱️ [UPLOAD] Total upload processing time: {total_processing_time:.2f} seconds")
+        print(
+            f"📊 [UPLOAD] File sizes - CV: {cv_file_size} bytes, Report: {report_file_size} bytes"
+        )
+        print(
+            f"⏱️ [UPLOAD] Total upload processing time: {total_processing_time:.2f} seconds"
+        )
 
         # Return document IDs as per specification
         response_data = {"cv_id": cv_id, "report_id": report_id}
@@ -346,7 +362,9 @@ def upload_documents():
     except Exception as e:
         end_time = datetime.utcnow()
         processing_time = (end_time - start_time).total_seconds()
-        print(f"❌ [UPLOAD] Error occurred after {processing_time:.2f} seconds: {str(e)}")
+        print(
+            f"❌ [UPLOAD] Error occurred after {processing_time:.2f} seconds: {str(e)}"
+        )
         print(f"🔍 [UPLOAD] Error details: {type(e).__name__}")
         return jsonify({"error": str(e)}), 500
 
@@ -373,7 +391,9 @@ def _run_job(job_id):
         # Convert sqlite3.Row to dict to avoid .get() method issues
         job_dict = dict(job)
         cv_row = Document.get_by_id(job_dict["cv_id"]) if job_dict["cv_id"] else None
-        report_row = Document.get_by_id(job_dict["report_id"]) if job_dict["report_id"] else None
+        report_row = (
+            Document.get_by_id(job_dict["report_id"]) if job_dict["report_id"] else None
+        )
 
         # Convert Document rows to dict to avoid .get() method issues
         cv_dict = dict(cv_row) if cv_row else None
@@ -470,7 +490,9 @@ def evaluate():
 
         if not report_doc:
             print(f"❌ [EVALUATE] Report document with ID {report_id} not found")
-            return jsonify({"error": f"Report document with ID {report_id} not found"}), 404
+            return jsonify(
+                {"error": f"Report document with ID {report_id} not found"}
+            ), 404
 
         # Convert Document rows to dict to avoid .get() method issues
         cv_dict = dict(cv_doc)
@@ -488,17 +510,27 @@ def evaluate():
         try:
             print("🚀 [EVALUATE] Attempting to submit job to Redis queue...")
             if QUEUE_MANAGER_AVAILABLE:
-                print("📤 [EVALUATE] Queue manager is available, submitting to Redis...")
+                print(
+                    "📤 [EVALUATE] Queue manager is available, submitting to Redis..."
+                )
                 success = queue_manager.submit_job(job_id, cv_id, report_id, job_title)
                 if success:
                     print("✅ [EVALUATE] Job successfully submitted to Redis queue")
-                    total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-                    print(f"⏱️ [EVALUATE] Total submission time: {total_processing_time:.2f} seconds")
+                    total_processing_time = (
+                        datetime.utcnow() - start_time
+                    ).total_seconds()
+                    print(
+                        f"⏱️ [EVALUATE] Total submission time: {total_processing_time:.2f} seconds"
+                    )
                     return jsonify({"id": str(job_id), "status": "queued"}), 202
                 else:
-                    print("⚠️ [EVALUATE] Failed to submit to Redis queue, falling back to local thread")
+                    print(
+                        "⚠️ [EVALUATE] Failed to submit to Redis queue, falling back to local thread"
+                    )
             else:
-                print("⚠️ [EVALUATE] Queue manager not available, using local thread fallback")
+                print(
+                    "⚠️ [EVALUATE] Queue manager not available, using local thread fallback"
+                )
 
             # Fallback ke thread lokal bila gagal atau queue manager tidak tersedia
             print("🧵 [EVALUATE] Starting local processing thread...")
@@ -507,7 +539,9 @@ def evaluate():
             print("✅ [EVALUATE] Local processing thread started successfully")
 
             total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-            print(f"⏱️ [EVALUATE] Total submission time (fallback): {total_processing_time:.2f} seconds")
+            print(
+                f"⏱️ [EVALUATE] Total submission time (fallback): {total_processing_time:.2f} seconds"
+            )
             return jsonify({"id": str(job_id), "status": "queued"}), 202
 
         except Exception as e:
@@ -520,13 +554,17 @@ def evaluate():
             print("✅ [EVALUATE] Local processing thread started successfully")
 
             total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-            print(f"⏱️ [EVALUATE] Total submission time (final fallback): {total_processing_time:.2f} seconds")
+            print(
+                f"⏱️ [EVALUATE] Total submission time (final fallback): {total_processing_time:.2f} seconds"
+            )
             return jsonify({"id": str(job_id), "status": "queued"}), 202
 
     except Exception as e:
         end_time = datetime.utcnow()
         processing_time = (end_time - start_time).total_seconds()
-        print(f"❌ [EVALUATE] Error occurred after {processing_time:.2f} seconds: {str(e)}")
+        print(
+            f"❌ [EVALUATE] Error occurred after {processing_time:.2f} seconds: {str(e)}"
+        )
         print(f"🔍 [EVALUATE] Error details: {type(e).__name__}")
         return jsonify({"error": str(e)}), 500
 
@@ -600,27 +638,39 @@ def get_result(job_id):
         job_dict = dict(job)
         status = job_dict["status"]
         print(f"📊 [RESULT] Job {job_id} status: {status}")
-        print(f"📝 [RESULT] Job details: Title='{job_dict.get('job_title', 'N/A')}', CV_ID={job_dict.get('cv_id')}, Report_ID={job_dict.get('report_id')}")
+        print(
+            f"📝 [RESULT] Job details: Title='{job_dict.get('job_title', 'N/A')}', CV_ID={job_dict.get('cv_id')}, Report_ID={job_dict.get('report_id')}"
+        )
 
         # Check if job is still queued/processing
         if status in ["queued", "processing"]:
-            print(f"⏳ [RESULT] Job {job_id} is still {status}, checking Redis for results...")
+            print(
+                f"⏳ [RESULT] Job {job_id} is still {status}, checking Redis for results..."
+            )
             # Try to get result from Simple Redis Worker with proper timeout
             redis_start_time = datetime.utcnow()
             result = queue_manager.get_result(job_id, timeout=5)
             redis_query_time = (datetime.utcnow() - redis_start_time).total_seconds()
 
-            print(f"🔎 [RESULT] Redis query completed in {redis_query_time:.2f} seconds")
+            print(
+                f"🔎 [RESULT] Redis query completed in {redis_query_time:.2f} seconds"
+            )
 
             if result:
                 print(f"✅ [RESULT] Result found in Redis for job {job_id}")
 
                 # Result found in Redis, update job status
                 if "error" in result:
-                    print(f"❌ [RESULT] Error found in result for job {job_id}: {result['error']}")
+                    print(
+                        f"❌ [RESULT] Error found in result for job {job_id}: {result['error']}"
+                    )
                     Job.update_status(job_id, "failed", error_message=result["error"])
-                    total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-                    print(f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds")
+                    total_processing_time = (
+                        datetime.utcnow() - start_time
+                    ).total_seconds()
+                    print(
+                        f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
+                    )
 
                     return jsonify(
                         {
@@ -630,7 +680,9 @@ def get_result(job_id):
                         }
                     ), 500
                 else:
-                    print(f"🎉 [RESULT] Success result found for job {job_id}, updating database...")
+                    print(
+                        f"🎉 [RESULT] Success result found for job {job_id}, updating database..."
+                    )
                     # Success result found, update job status and result
                     Job.update_status(
                         job_id, "completed", result_json=json.dumps(result)
@@ -639,11 +691,19 @@ def get_result(job_id):
                     # Transform result to match specification format
                     transform_start_time = datetime.utcnow()
                     transformed_result = _transform_result_to_spec_format(result)
-                    transform_time = (datetime.utcnow() - transform_start_time).total_seconds()
-                    print(f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds")
+                    transform_time = (
+                        datetime.utcnow() - transform_start_time
+                    ).total_seconds()
+                    print(
+                        f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds"
+                    )
 
-                    total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-                    print(f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds")
+                    total_processing_time = (
+                        datetime.utcnow() - start_time
+                    ).total_seconds()
+                    print(
+                        f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
+                    )
 
                     return jsonify(
                         {
@@ -653,13 +713,19 @@ def get_result(job_id):
                         }
                     )
             else:
-                print(f"⏳ [RESULT] No result found in Redis for job {job_id}, still processing...")
+                print(
+                    f"⏳ [RESULT] No result found in Redis for job {job_id}, still processing..."
+                )
                 total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-                print(f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds")
+                print(
+                    f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
+                )
                 return jsonify({"id": str(job_id), "status": status})
 
         elif status == "completed":
-            print(f"✅ [RESULT] Job {job_id} is completed, retrieving result from database...")
+            print(
+                f"✅ [RESULT] Job {job_id} is completed, retrieving result from database..."
+            )
 
             # Get result from database first
             if job_dict["result_json"]:
@@ -667,14 +733,22 @@ def get_result(job_id):
                 db_start_time = datetime.utcnow()
                 result = json.loads(job_dict["result_json"])
                 db_query_time = (datetime.utcnow() - db_start_time).total_seconds()
-                print(f"🔎 [RESULT] Database query completed in {db_query_time:.2f} seconds")
+                print(
+                    f"🔎 [RESULT] Database query completed in {db_query_time:.2f} seconds"
+                )
             else:
-                print(f"⚠️ [RESULT] No result in database for job {job_id}, checking Redis...")
+                print(
+                    f"⚠️ [RESULT] No result in database for job {job_id}, checking Redis..."
+                )
                 # If result_json is empty, try to get from Redis (for SimpleWorker jobs)
                 redis_start_time = datetime.utcnow()
                 result = queue_manager.get_result(job_id, timeout=5)
-                redis_query_time = (datetime.utcnow() - redis_start_time).total_seconds()
-                print(f"🔎 [RESULT] Redis fallback query completed in {redis_query_time:.2f} seconds")
+                redis_query_time = (
+                    datetime.utcnow() - redis_start_time
+                ).total_seconds()
+                print(
+                    f"🔎 [RESULT] Redis fallback query completed in {redis_query_time:.2f} seconds"
+                )
 
                 if result:
                     print(f"📝 [RESULT] Found result in Redis, updating database...")
@@ -683,17 +757,23 @@ def get_result(job_id):
                         job_id, "completed", result_json=json.dumps(result)
                     )
                 else:
-                    print(f"⚠️ [RESULT] No result found in Redis either, using empty result")
+                    print(
+                        f"⚠️ [RESULT] No result found in Redis either, using empty result"
+                    )
 
             # Transform result to match specification format
             print(f"🔄 [RESULT] Transforming result to specification format...")
             transform_start_time = datetime.utcnow()
             transformed_result = _transform_result_to_spec_format(result or {})
             transform_time = (datetime.utcnow() - transform_start_time).total_seconds()
-            print(f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds")
+            print(
+                f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds"
+            )
 
             total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-            print(f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds")
+            print(
+                f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
+            )
 
             return jsonify(
                 {"id": str(job_id), "status": status, "result": transformed_result}
@@ -703,7 +783,9 @@ def get_result(job_id):
             error_message = job_dict["error_message"] or "Unknown error"
             print(f"❌ [RESULT] Job {job_id} failed with error: {error_message}")
             total_processing_time = (datetime.utcnow() - start_time).total_seconds()
-            print(f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds")
+            print(
+                f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
+            )
 
             return jsonify(
                 {
@@ -716,7 +798,9 @@ def get_result(job_id):
     except Exception as e:
         end_time = datetime.utcnow()
         processing_time = (end_time - start_time).total_seconds()
-        print(f"❌ [RESULT] Error occurred after {processing_time:.2f} seconds: {str(e)}")
+        print(
+            f"❌ [RESULT] Error occurred after {processing_time:.2f} seconds: {str(e)}"
+        )
         print(f"🔍 [RESULT] Error details: {type(e).__name__}")
         return jsonify({"error": str(e)}), 500
 
