@@ -6,11 +6,14 @@ Start Celery worker with proper task registration.
 import os
 
 # Set environment variables
-os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
-os.environ.setdefault("REDIS_BACKEND", "redis://localhost:6379/1")
+os.environ.setdefault("REDIS_URL", "redis://redis:6379/0")
+os.environ.setdefault("REDIS_BACKEND", "redis://redis:6379/1")
 
 # Import celery app first
-from celery_app import celery
+from src.workers.celery_app import celery
+
+# Import tasks to register them
+from src.workers import tasks
 
 
 def main():

@@ -1,4 +1,4 @@
-# Development Dockerfile - Fast builds for development
+# Development Dockerfile - Fast builds for development (SimpleWorker-based)
 FROM python:3.11-slim
 
 # Install system dependencies
@@ -26,11 +26,12 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p logs uploads pids
 
-# Set environment variables for development
+# Set environment variables for development with SimpleWorker
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
+ENV REDIS_URL=redis://localhost:6379/0
 
 # Expose Flask port
 EXPOSE 5000
@@ -39,5 +40,5 @@ EXPOSE 5000
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Start with auto-reload for development
+# Default command - API server, can be overridden for worker
 CMD ["python", "main.py"]

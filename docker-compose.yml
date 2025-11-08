@@ -30,8 +30,10 @@ services:
       - ./logs:/app/logs
       - ./docs:/app/docs
       - ./samples:/app/samples
+      - ./database.db:/app/database.db
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - GEMINI_API_KEY=AIzaSyCRtkNwIKFirwnxziwijEx-3lVUOVknjaY
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
       - FLASK_ENV=development
@@ -47,20 +49,22 @@ services:
       retries: 3
       start_period: 40s
 
-  # Celery Worker Service
+  # Simple Worker Service (Redis-based, not Celery)
   worker:
     build:
       context: .
       dockerfile: Dockerfile
     image: hr_worker:latest
-    command: python start_worker.py
+    command: python src/workers/simple_worker.py
     volumes:
       - ./uploads:/app/uploads
       - ./logs:/app/logs
       - ./docs:/app/docs
       - ./samples:/app/samples
+      - ./database.db:/app/database.db
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - GEMINI_API_KEY=AIzaSyCRtkNwIKFirwnxziwijEx-3lVUOVknjaY
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
       - FLASK_ENV=development
@@ -70,47 +74,6 @@ services:
         condition: service_healthy
     restart: unless-stopped
     scale: 2
-
-  # Celery Beat Service (Optional - for scheduled tasks)
-  beat:
-    build: .
-    container_name: hr_beat
-    command: celery -A celery_app beat --loglevel=info
-    volumes:
-      - ./logs:/app/logs
-      - ./docs:/app/docs
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-      - PYTHONPATH=/app
-      - PYTHONUNBUFFERED=1
-      - FLASK_ENV=development
-      - LOG_LEVEL=INFO
-    depends_on:
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-    profiles:
-      - full
-
-  # Flower Service (Optional - for monitoring Celery)
-  flower:
-    build: .
-    container_name: hr_flower
-    command: celery -A celery_app flower --port=5555
-    ports:
-      - "5555:5555"
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-      - PYTHONPATH=/app
-      - PYTHONUNBUFFERED=1
-      - FLASK_ENV=development
-      - LOG_LEVEL=INFO
-    depends_on:
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-    profiles:
-      - monitoring
 
 volumes:
   redis_data:

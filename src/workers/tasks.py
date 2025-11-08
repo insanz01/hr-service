@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from celery_app import celery
+from src.workers.celery_app import celery
 from src.core.evaluation import evaluate_candidate_job
 
 

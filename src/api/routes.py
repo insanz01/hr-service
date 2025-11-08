@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 from src.models.database import Document, Job
 from src.core.rag_engine import ingest_text, query, has_id, ingest_file
 from src.core.ai_engine import evaluate_cv, evaluate_project, synthesize_overall
-from src.workers.tasks import process_uploaded_file_task, run_job_task
+from src.workers.tasks import run_job_task
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -135,14 +135,13 @@ def upload_documents():
             doc_type = "cv" if "cv" in filename.lower() else "project"
 
             # Create database record
-            doc = Document.create(
-                filename=filename,
-                file_path=save_path,
+            doc_id = Document.create(
                 doc_type=doc_type,
-                status="uploaded"
+                filename=filename,
+                path=save_path
             )
             uploaded.append({
-                "id": doc.id,
+                "id": doc_id,
                 "filename": filename,
                 "type": doc_type,
                 "status": "uploaded"
@@ -150,7 +149,7 @@ def upload_documents():
 
             # Process in background (optional: queue)
             try:
-                _process_uploaded_file(doc.id, save_path, doc_type)
+                _process_uploaded_file(doc_id, save_path, doc_type)
             except Exception:
                 pass
 
@@ -179,21 +178,33 @@ def evaluate():
         if not documents:
             return jsonify({"error": "documents list is required"}), 400
 
-        # Create job
-        job = Job.create(
+        # Extract cv_id and report_id from documents list
+        cv_id = None
+        report_id = None
+
+        for doc in documents:
+            if doc.get('type') == 'cv':
+                cv_id = doc.get('id')
+            elif doc.get('type') == 'project':
+                report_id = doc.get('id')
+
+        if not cv_id or not report_id:
+            return jsonify({"error": "Both CV and Project documents are required"}), 400
+
+        # Create job with correct parameters
+        job_id = Job.create(
             job_title=job_title,
-            documents=json.dumps(documents),
-            status="pending"
+            cv_id=cv_id,
+            report_id=report_id
         )
 
         # Submit to Celery
-        task = run_job_task.delay(job.id)
-        job.update(task_id=task.id)
+        task = run_job_task.delay(job_id)
 
         return jsonify({
-            "job_id": job.id,
+            "job_id": job_id,
             "status": "processing",
-            "message": "Evaluation started. Use /result/{} to check progress.".format(job.id)
+            "message": "Evaluation started. Use /result/{} to check progress.".format(job_id)
         }), 200
 
     except Exception as e:

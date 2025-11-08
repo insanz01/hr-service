@@ -1,5 +1,5 @@
-# HR Screening System - Optimized Multi-Stage Dockerfile
-FROM python:3.11-slim as base
+# HR Screening System - Optimized Multi-Stage Dockerfile (SimpleWorker-based)
+FROM python:3.11-slim AS base
 
 # Install system dependencies (cached layer)
 RUN apt-get update && apt-get install -y \
@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Production stage
-FROM python:3.11-slim as production
+FROM python:3.11-slim AS production
 
 # Install only runtime dependencies
 RUN apt-get update && apt-get install -y \
@@ -39,10 +39,11 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p logs uploads pids
 
-# Set environment variables
+# Set environment variables for SimpleWorker
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_ENV=production
+ENV REDIS_URL=redis://redis:6379/0
 
 # Expose Flask port
 EXPOSE 5000
@@ -51,5 +52,5 @@ EXPOSE 5000
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Default command - will be overridden by docker-compose
+# Default command - API server by default, can be overridden for worker
 CMD ["python", "main.py"]

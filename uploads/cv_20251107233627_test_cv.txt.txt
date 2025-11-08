@@ -1,0 +1,69 @@
+John Doe
+Senior Software Engineer
+=====================================
+
+Contact Information:
+- Email: john.doe@email.com
+- Phone: +62-812-3456-7890
+- LinkedIn: linkedin.com/in/johndoe
+- GitHub: github.com/johndoe
+
+Professional Summary:
+Experienced Senior Software Engineer with 8+ years of expertise in full-stack development,
+cloud architecture, and AI/ML integration. Proven track record of leading development teams
+and delivering scalable solutions for enterprise clients.
+
+Technical Skills:
+- Programming Languages: Python, JavaScript, TypeScript, Java, Go
+- Frontend: React, Vue.js, Angular, HTML5/CSS3
+- Backend: Node.js, Django, Flask, Spring Boot
+- Cloud Platforms: AWS, Google Cloud, Azure
+- Databases: PostgreSQL, MongoDB, Redis, MySQL
+- DevOps: Docker, Kubernetes, Jenkins, CI/CD
+- AI/ML: TensorFlow, PyTorch, scikit-learn
+- Tools: Git, JIRA, Confluence, Agile/Scrum
+
+Work Experience:
+
+Senior Software Engineer | TechCorp Solutions | 2020 - Present
+- Led development of microservices architecture serving 1M+ users
+- Implemented AI-powered recommendation system using Python and TensorFlow
+- Reduced system latency by 40% through optimization and caching strategies
+- Mentored team of 5 junior developers and conducted code reviews
+- Collaborated with product managers to define technical requirements
+
+Software Engineer | StartupXYZ | 2018 - 2020
+- Developed RESTful APIs using Node.js and Express
+- Built responsive web applications with React and TypeScript
+- Integrated third-party payment gateways and authentication systems
+- Participated in Agile development processes and daily stand-ups
+
+Junior Developer | WebDev Agency | 2016 - 2018
+- Created and maintained WordPress and custom PHP websites
+- Implemented responsive designs using HTML5, CSS3, and JavaScript
+- Worked with MySQL databases and wrote complex SQL queries
+
+Education:
+Bachelor of Science in Computer Science
+University of Technology | 2012 - 2016
+- GPA: 3.8/4.0
+- Dean's List for 6 semesters
+- Member of Computer Science Club
+
+Certifications:
+- AWS Certified Solutions Architect (2021)
+- Google Cloud Professional Developer (2022)
+- MongoDB Certified Developer (2021)
+
+Projects:
+E-commerce Platform | Full Stack Developer | 2023
+- Built scalable e-commerce platform using MERN stack
+- Implemented payment processing with Stripe and PayPal
+- Added real-time inventory management and order tracking
+- Deployed on AWS with auto-scaling capabilities
+
+AI Chatbot | Machine Learning Engineer | 2022
+- Developed conversational AI using Python and Natural Language Processing
+- Integrated with messaging platforms like WhatsApp and Telegram
+- Achieved 85% accuracy in intent recognition
+- Reduced customer response time by 60%

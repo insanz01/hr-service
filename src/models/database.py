@@ -1,4 +1,73 @@
-from database import get_db_connection
+import sqlite3
+import os
+
+
+def get_db_connection():
+    """Get database connection"""
+    db_path = os.path.join(os.getcwd(), "database.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+    """Initialize database tables"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Create users table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # Create todos table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS todos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            completed BOOLEAN DEFAULT 0,
+            user_id INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
+    # Create documents table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS documents (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doc_type TEXT NOT NULL,
+            filename TEXT NOT NULL,
+            path TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # Create jobs table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            job_title TEXT NOT NULL,
+            cv_id INTEGER,
+            report_id INTEGER,
+            status TEXT DEFAULT 'queued',
+            result_json TEXT,
+            error_message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (cv_id) REFERENCES documents (id),
+            FOREIGN KEY (report_id) REFERENCES documents (id)
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
 
 
 class User:
@@ -278,6 +347,14 @@ class Document:
         conn.close()
         return row
 
+    @staticmethod
+    def count():
+        """Count total documents"""
+        conn = get_db_connection()
+        count = conn.execute("SELECT COUNT(*) as count FROM documents").fetchone()["count"]
+        conn.close()
+        return count
+
 
 # Model untuk jobs
 class Job:
@@ -333,3 +410,22 @@ class Job:
         conn.commit()
         conn.close()
         return True
+
+    @staticmethod
+    def count():
+        """Count total jobs"""
+        conn = get_db_connection()
+        count = conn.execute("SELECT COUNT(*) as count FROM jobs").fetchone()["count"]
+        conn.close()
+        return count
+
+    @staticmethod
+    def get_recent(limit=10):
+        """Get recent jobs"""
+        conn = get_db_connection()
+        jobs = conn.execute(
+            "SELECT * FROM jobs ORDER BY created_at DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+        conn.close()
+        return jobs
