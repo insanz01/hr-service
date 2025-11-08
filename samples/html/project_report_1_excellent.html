@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>project_report_1_excellent</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="ai-powered-cv-screening-system---implementation-report">AI-Powered
+CV Screening System - Implementation Report</h1>
+<p><strong>Candidate:</strong> John Doe <strong>Date:</strong> October
+2024 <strong>Project Duration:</strong> 5 days</p>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>This report documents the implementation of an AI-powered CV
+screening system that automates the initial evaluation of job
+applications. The system leverages Retrieval-Augmented Generation (RAG),
+prompt chaining, and advanced error handling to provide structured
+evaluation reports for candidate screening.</p>
+<h2 id="system-architecture-design">2. System Architecture &amp;
+Design</h2>
+<h3 id="high-level-architecture">2.1 High-Level Architecture</h3>
+<p>The system follows a microservices architecture with clear separation
+of concerns:</p>
+<pre><code>┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Flask API     │    │   Celery Worker  │    │  Vector DB      │
+│   (main.py)     │◄──►│   (tasks.py)     │◄──►│  (ChromaDB)     │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│  SQLite DB      │    │   LLM Service    │    │  File Storage   │
+│  (database.py)  │    │   (Gemini API)   │    │  (uploads/)     │
+└─────────────────┘    └──────────────────┘    └─────────────────┘</code></pre>
+<h3 id="database-schema-design">2.2 Database Schema Design</h3>
+<h4 id="users-table">Users Table</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    email TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">UNIQUE</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h4 id="documents-table">Documents Table</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> documents (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    doc_type TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    filename TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    path TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h4 id="jobs-table">Jobs Table</h4>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> jobs (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    job_title TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    cv_id <span class="dt">INTEGER</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    report_id <span class="dt">INTEGER</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    status TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    result_json TEXT,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    error_message TEXT,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (cv_id) <span class="kw">REFERENCES</span> documents(<span class="kw">id</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (report_id) <span class="kw">REFERENCES</span> documents(<span class="kw">id</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h2 id="api-endpoints-implementation">3. API Endpoints
+Implementation</h2>
+<h3 id="document-upload-endpoint">3.1 Document Upload Endpoint</h3>
+<p><strong>Endpoint:</strong> <code>POST /upload</code></p>
+<p><strong>Implementation Details:</strong> - Multipart form-data
+handling for file uploads - Secure filename generation with timestamps -
+Async processing via Celery for text extraction and RAG ingestion -
+Fallback to local threading if Celery unavailable</p>
+<p><strong>Error Handling:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/upload&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> upload_documents():</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">&#39;cv&#39;</span> <span class="kw">not</span> <span class="kw">in</span> request.files <span class="kw">or</span> <span class="st">&#39;report&#39;</span> <span class="kw">not</span> <span class="kw">in</span> request.files:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Form harus berisi file cv dan report&#39;</span>}), <span class="dv">400</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># File validation and secure naming</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        cv_name <span class="op">=</span> secure_filename(cv_file.filename)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        cv_path <span class="op">=</span> os.path.join(UPLOAD_DIR, <span class="ss">f&quot;cv_</span><span class="sc">{</span>datetime<span class="sc">.</span>now()<span class="sc">.</span>strftime(<span class="st">&#39;%Y%m</span><span class="sc">%d</span><span class="st">%H%M%S&#39;</span>)<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>cv_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Async processing with fallback</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            process_uploaded_file_task.delay(cv_id, cv_path, <span class="st">&#39;cv&#39;</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            upload_queue.put({<span class="st">&#39;doc_id&#39;</span>: cv_id, <span class="st">&#39;path&#39;</span>: cv_path, <span class="st">&#39;doc_type&#39;</span>: <span class="st">&#39;cv&#39;</span>})</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="evaluation-trigger-endpoint">3.2 Evaluation Trigger
+Endpoint</h3>
+<p><strong>Endpoint:</strong> <code>POST /evaluate</code></p>
+<p><strong>Implementation Features:</strong> - Job creation with unique
+tracking ID - Immediate response with job status - Async processing
+initiation - Comprehensive input validation</p>
+<h3 id="result-retrieval-endpoint">3.3 Result Retrieval Endpoint</h3>
+<p><strong>Endpoint:</strong> <code>GET /result/{id}</code></p>
+<p><strong>Status Management:</strong> - <code>queued</code>: Initial
+state - <code>processing</code>: Evaluation in progress -
+<code>completed</code>: Results ready - <code>failed</code>: Error
+occurred</p>
+<h2 id="llm-integration-prompt-design">4. LLM Integration &amp; Prompt
+Design</h2>
+<h3 id="rag-implementation">4.1 RAG Implementation</h3>
+<p><strong>Vector Database Setup:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ChromaDB configuration</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>RAG_DIR <span class="op">=</span> os.path.join(os.path.dirname(<span class="va">__file__</span>), <span class="st">&#39;uploads&#39;</span>, <span class="st">&#39;chroma&#39;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>_client <span class="op">=</span> chromadb.PersistentClient(path<span class="op">=</span>RAG_DIR)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>_collection <span class="op">=</span> _client.get_or_create_collection(name<span class="op">=</span><span class="st">&quot;system_docs&quot;</span>)</span></code></pre></div>
+<p><strong>Context Retrieval Strategy:</strong> - Job descriptions
+ingested with metadata tags - Case study brief used as ground truth for
+project evaluation - Semantic search for relevant context injection</p>
+<h3 id="prompt-chaining-architecture">4.2 Prompt Chaining
+Architecture</h3>
+<p><strong>Chain 1: CV Evaluation</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cv_prompt <span class="op">=</span> <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ss">As an experienced HR tech professional, evaluate this CV against the job requirements.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ss">CV Content:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>cv_text<span class="sc">}</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ss">Job Context:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>retrieved_job_context<span class="sc">}</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ss">Scoring Rubric:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- Technical Skills Match (40%): Alignment with backend, databases, APIs, cloud, AI/LLM</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- Experience Level (25%): Years and complexity of projects</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- Relevant Achievements (20%): Impact and scale of past work</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- Cultural Fit (15%): Communication and learning mindset</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ss">Provide:</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="ss">1. Match rate (0-1 decimal)</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="ss">2. Detailed feedback with specific examples</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span></span></code></pre></div>
+<p><strong>Chain 2: Project Evaluation</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>project_prompt <span class="op">=</span> <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ss">Evaluate this project report against the case study requirements.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ss">Project Report:</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>report_text<span class="sc">}</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ss">Case Study Brief:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>case_brief_context<span class="sc">}</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="ss">Technical Requirements Assessment:</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- Correctness (30%): Prompt design, chaining, RAG, error handling</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- Code Quality (25%): Clean, modular, tested code</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- Resilience (20%): Long jobs, retries, API failures</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- Documentation (15%): README clarity, explanations</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- Creativity (10%): Extra features beyond requirements</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="ss">Provide:</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="ss">1. Project score (1-5 scale)</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="ss">2. Specific feedback on implementation quality</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span></span></code></pre></div>
+<p><strong>Chain 3: Overall Synthesis</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>synthesis_prompt <span class="op">=</span> <span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ss">Synthesize the CV and project evaluations into a comprehensive assessment.</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ss">CV Evaluation: </span><span class="sc">{</span>cv_result<span class="sc">}</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ss">Project Evaluation: </span><span class="sc">{</span>project_result<span class="sc">}</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ss">Provide a 3-5 sentence summary covering:</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- Candidate strengths and relevant experience</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- Technical capability assessment</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- Recommendations for next steps</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span></span></code></pre></div>
+<h2 id="error-handling-resilience">5. Error Handling &amp;
+Resilience</h2>
+<h3 id="multi-layer-error-handling">5.1 Multi-Layer Error Handling</h3>
+<p><strong>API Level:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.errorhandler</span>(<span class="dv">500</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> internal_error(error):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Terjadi kesalahan internal&#39;</span>}), <span class="dv">500</span></span></code></pre></div>
+<p><strong>LLM API Level:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="at">@celery.task</span>(bind<span class="op">=</span><span class="va">True</span>, autoretry_for<span class="op">=</span>(<span class="pp">Exception</span>,), retry_backoff<span class="op">=</span><span class="dv">10</span>, retry_kwargs<span class="op">=</span>{<span class="st">&quot;max_retries&quot;</span>: <span class="dv">5</span>})</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_job_task(<span class="va">self</span>, job_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.request.timelimit <span class="op">=</span> (<span class="va">None</span>, <span class="bu">int</span>(timedelta(minutes<span class="op">=</span><span class="dv">10</span>).total_seconds()))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        run_job(job_id<span class="op">=</span>job_id)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Exponential backoff retry logic</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="va">self</span>.retry(exc<span class="op">=</span>e, countdown<span class="op">=</span><span class="dv">60</span> <span class="op">*</span> (<span class="dv">2</span> <span class="op">**</span> <span class="va">self</span>.request.retries))</span></code></pre></div>
+<p><strong>Fallback Mechanisms:</strong> - Mock evaluation when LLM
+unavailable - Local threading fallback when Celery broker down -
+Graceful degradation with partial functionality</p>
+<h3 id="timeout-and-resource-management">5.2 Timeout and Resource
+Management</h3>
+<p><strong>Configuration:</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Task timeout configuration</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.request.timelimit <span class="op">=</span> (<span class="va">None</span>, <span class="bu">int</span>(timedelta(minutes<span class="op">=</span><span class="dv">10</span>).total_seconds()))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Queue size limits</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>upload_queue <span class="op">=</span> queue.Queue(maxsize<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Database connection pooling</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>connection <span class="op">=</span> get_db_connection()</span></code></pre></div>
+<h2 id="performance-optimizations">6. Performance Optimizations</h2>
+<h3 id="caching-strategy">6.1 Caching Strategy</h3>
+<ul>
+<li>Redis integration for session management</li>
+<li>Vector embedding caching for repeated queries</li>
+<li>Database query optimization with proper indexing</li>
+</ul>
+<h3 id="async-processing">6.2 Async Processing</h3>
+<ul>
+<li>Celery workers for long-running tasks</li>
+<li>Queue management with proper prioritization</li>
+<li>Background processing for file ingestion</li>
+</ul>
+<h2 id="security-considerations">7. Security Considerations</h2>
+<h3 id="file-upload-security">7.1 File Upload Security</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>filename <span class="op">=</span> secure_filename(<span class="bu">file</span>.filename)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>allowed_extensions <span class="op">=</span> {<span class="st">&#39;pdf&#39;</span>, <span class="st">&#39;txt&#39;</span>, <span class="st">&#39;docx&#39;</span>}</span></code></pre></div>
+<h3 id="api-security">7.2 API Security</h3>
+<ul>
+<li>Input validation and sanitization</li>
+<li>Rate limiting considerations</li>
+<li>Environment variable management for API keys</li>
+</ul>
+<h2 id="deployment-monitoring">8. Deployment &amp; Monitoring</h2>
+<h3 id="environment-configuration">8.1 Environment Configuration</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .env file configuration</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>GEMINI_API_KEY<span class="op">=</span>your_api_key</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>REDIS_URL<span class="op">=</span>redis:<span class="op">//</span>localhost:<span class="dv">6379</span><span class="op">/</span><span class="dv">0</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>REDIS_BACKEND<span class="op">=</span>redis:<span class="op">//</span>localhost:<span class="dv">6379</span><span class="op">/</span><span class="dv">1</span></span></code></pre></div>
+<h3 id="health-checks">8.2 Health Checks</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/health&#39;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> health_check():</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;status&#39;</span>: <span class="st">&#39;healthy&#39;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;services&#39;</span>: {</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&#39;database&#39;</span>: check_db_connection(),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&#39;redis&#39;</span>: check_redis_connection(),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&#39;chroma&#39;</span>: check_chroma_connection()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    })</span></code></pre></div>
+<h2 id="testing-strategy">9. Testing Strategy</h2>
+<h3 id="unit-testing">9.1 Unit Testing</h3>
+<ul>
+<li>Database operations testing</li>
+<li>API endpoint validation</li>
+<li>Mock LLM responses for consistent testing</li>
+</ul>
+<h3 id="integration-testing">9.2 Integration Testing</h3>
+<ul>
+<li>End-to-end workflow testing</li>
+<li>Error scenario simulation</li>
+<li>Performance load testing</li>
+</ul>
+<h2 id="results-metrics">10. Results &amp; Metrics</h2>
+<h3 id="system-performance">10.1 System Performance</h3>
+<ul>
+<li>Average response time: 150ms for API endpoints</li>
+<li>File processing: &lt;30 seconds for standard PDFs</li>
+<li>Concurrent job handling: 10+ simultaneous evaluations</li>
+</ul>
+<h3 id="evaluation-quality">10.2 Evaluation Quality</h3>
+<ul>
+<li>Consistency rate: 95%+ across multiple runs</li>
+<li>Accuracy validation: Calibrated against manual reviews</li>
+<li>Feedback relevance: High correlation with expert assessments</li>
+</ul>
+<h2 id="future-improvements">11. Future Improvements</h2>
+<h3 id="enhanced-features">11.1 Enhanced Features</h3>
+<ul>
+<li>Support for additional document formats</li>
+<li>Multi-language capability expansion</li>
+<li>Advanced analytics dashboard</li>
+<li>Integration with ATS systems</li>
+</ul>
+<h3 id="technical-enhancements">11.2 Technical Enhancements</h3>
+<ul>
+<li>Microservices decomposition</li>
+<li>Advanced prompt engineering techniques</li>
+<li>Real-time WebSocket updates</li>
+<li>Enhanced monitoring and alerting</li>
+</ul>
+<h2 id="conclusion">12. Conclusion</h2>
+<p>The AI-powered CV screening system successfully demonstrates
+integration of backend engineering with AI workflows. Key achievements
+include:</p>
+<ol type="1">
+<li><strong>Robust Architecture</strong>: Scalable microservices design
+with proper separation of concerns</li>
+<li><strong>Advanced AI Integration</strong>: Sophisticated RAG
+implementation with multi-stage prompt chaining</li>
+<li><strong>Production-Ready Error Handling</strong>: Comprehensive
+resilience mechanisms with fallback strategies</li>
+<li><strong>High Performance</strong>: Optimized processing with async
+task management</li>
+<li><strong>Security Best Practices</strong>: Proper validation,
+sanitization, and resource management</li>
+</ol>
+<p>The system provides a solid foundation for automated candidate
+screening with room for future enhancements and scalability
+improvements.</p>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>project_report_3_basic</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="backend-hr-screening-service---project-report">Backend HR
+Screening Service - Project Report</h1>
+<p><strong>Candidate:</strong> Mike Chen <strong>Project Date:</strong>
+October 2024 <strong>Duration:</strong> 5 days</p>
+<h2 id="project-introduction">1. Project Introduction</h2>
+<p>This project implements a backend service for screening job
+applications using AI. The system evaluates candidate CVs and project
+reports against job requirements using LLM integration.</p>
+<h2 id="implementation-overview">2. Implementation Overview</h2>
+<h3 id="technology-stack-used">2.1 Technology Stack Used</h3>
+<ul>
+<li><strong>Backend Framework:</strong> Flask (Python)</li>
+<li><strong>Database:</strong> SQLite3</li>
+<li><strong>AI Service:</strong> Google Gemini API</li>
+<li><strong>Vector Database:</strong> ChromaDB (basic
+implementation)</li>
+<li><strong>Background Processing:</strong> Celery with Redis</li>
+<li><strong>File Handling:</strong> PyPDF2 for PDF processing</li>
+</ul>
+<h3 id="project-structure">2.2 Project Structure</h3>
+<pre><code>hr-service/
+├── main.py              # Flask application and API endpoints
+├── database.py          # Database setup and initialization
+├── models.py            # Database models and operations
+├── llm.py              # LLM integration functions
+├── rag.py              # Vector database operations
+├── celery_app.py       # Celery configuration
+├── tasks.py            # Background task definitions
+├── workers.py          # Worker functions
+├── uploads/            # File storage directory
+├── docs/               # Documentation
+├── requirements.txt    # Python dependencies
+└── README.md          # Project documentation</code></pre>
+<h2 id="api-implementation">3. API Implementation</h2>
+<h3 id="upload-endpoint">3.1 Upload Endpoint</h3>
+<p><strong>Route:</strong> <code>POST /upload</code></p>
+<p><strong>Functionality:</strong> - Accepts CV and report files via
+multipart form data - Saves files with secure names and timestamps -
+Creates database records for uploaded files - Processes files in
+background for text extraction</p>
+<p><strong>Basic Implementation:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/upload&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> upload_documents():</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        cv_file <span class="op">=</span> request.files[<span class="st">&#39;cv&#39;</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        report_file <span class="op">=</span> request.files[<span class="st">&#39;report&#39;</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Save CV file</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        cv_name <span class="op">=</span> secure_filename(cv_file.filename)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        cv_path <span class="op">=</span> os.path.join(UPLOAD_DIR, <span class="ss">f&quot;cv_</span><span class="sc">{</span>datetime<span class="sc">.</span>now()<span class="sc">.</span>strftime(<span class="st">&#39;%Y%m</span><span class="sc">%d</span><span class="st">%H%M%S&#39;</span>)<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>cv_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        cv_file.save(cv_path)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        cv_id <span class="op">=</span> Document.create(<span class="st">&#39;cv&#39;</span>, cv_name, cv_path)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Save Report file</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        report_name <span class="op">=</span> secure_filename(report_file.filename)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        report_path <span class="op">=</span> os.path.join(UPLOAD_DIR, <span class="ss">f&quot;report_</span><span class="sc">{</span>datetime<span class="sc">.</span>now()<span class="sc">.</span>strftime(<span class="st">&#39;%Y%m</span><span class="sc">%d</span><span class="st">%H%M%S&#39;</span>)<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>report_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        report_file.save(report_path)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        report_id <span class="op">=</span> Document.create(<span class="st">&#39;report&#39;</span>, report_name, report_path)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;cv_id&#39;</span>: cv_id, <span class="st">&#39;report_id&#39;</span>: report_id}), <span class="dv">201</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="evaluate-endpoint">3.2 Evaluate Endpoint</h3>
+<p><strong>Route:</strong> <code>POST /evaluate</code></p>
+<p><strong>Functionality:</strong> - Accepts job title, CV ID, and
+report ID - Creates evaluation job in database - Starts background
+processing - Returns job ID for tracking</p>
+<h3 id="result-endpoint">3.3 Result Endpoint</h3>
+<p><strong>Route:</strong> <code>GET /result/{id}</code></p>
+<p><strong>Functionality:</strong> - Returns job status and results -
+Handles different states: queued, processing, completed, failed</p>
+<h2 id="database-design">4. Database Design</h2>
+<h3 id="tables-created">4.1 Tables Created</h3>
+<p><strong>Users Table:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTOINCREMENT,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    email TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">UNIQUE</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Documents Table:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> documents (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTOINCREMENT,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    doc_type TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    filename TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    path TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><strong>Jobs Table:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> jobs (</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> <span class="dt">INTEGER</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span> AUTOINCREMENT,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    job_title TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    cv_id <span class="dt">INTEGER</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    report_id <span class="dt">INTEGER</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    status TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;queued&#39;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    result_json TEXT,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    error_message TEXT,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (cv_id) <span class="kw">REFERENCES</span> documents(<span class="kw">id</span>),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (report_id) <span class="kw">REFERENCES</span> documents(<span class="kw">id</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h2 id="llm-integration">5. LLM Integration</h2>
+<h3 id="basic-llm-wrapper">5.1 Basic LLM Wrapper</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> google.generativeai <span class="im">as</span> genai</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LLMWrapper:</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        genai.configure(api_key<span class="op">=</span>os.getenv(<span class="st">&#39;GEMINI_API_KEY&#39;</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.model <span class="op">=</span> genai.GenerativeModel(<span class="st">&#39;gemini-pro&#39;</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> evaluate_text(<span class="va">self</span>, prompt):</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            response <span class="op">=</span> <span class="va">self</span>.model.generate_content(prompt)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> response.text</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> available(<span class="va">self</span>):</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Simple test to check if API is available</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.model.generate_content(<span class="st">&quot;test&quot;</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span>:</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">False</span></span></code></pre></div>
+<h3 id="basic-prompt-engineering">5.2 Basic Prompt Engineering</h3>
+<p><strong>CV Evaluation Prompt:</strong></p>
+<pre><code>Evaluate this CV for the position: {job_title}
+
+CV Content: {cv_text}
+
+Provide:
+1. Match rate (0-1 scale)
+2. Brief feedback about strengths and areas for improvement</code></pre>
+<p><strong>Project Evaluation Prompt:</strong></p>
+<pre><code>Evaluate this project report based on technical implementation.
+
+Project Content: {project_text}
+
+Provide:
+1. Score (1-5 scale)
+2. Feedback about code quality and technical approach</code></pre>
+<h2 id="rag-implementation-basic">6. RAG Implementation (Basic)</h2>
+<h3 id="vector-database-setup">6.1 Vector Database Setup</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> chromadb</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> chromadb.utils <span class="im">import</span> embedding_functions</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize ChromaDB</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>RAG_DIR <span class="op">=</span> os.path.join(os.path.dirname(<span class="va">__file__</span>), <span class="st">&#39;uploads&#39;</span>, <span class="st">&#39;chroma&#39;</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>_client <span class="op">=</span> chromadb.PersistentClient(path<span class="op">=</span>RAG_DIR)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>_embedder <span class="op">=</span> embedding_functions.DefaultEmbeddingFunction()</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>_collection <span class="op">=</span> _client.get_or_create_collection(name<span class="op">=</span><span class="st">&quot;system_docs&quot;</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ingest_text(doc_id, text, metadata<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> text:</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        _collection.add(documents<span class="op">=</span>[text], metadatas<span class="op">=</span>[metadata <span class="kw">or</span> {}], ids<span class="op">=</span>[doc_id])</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> query_text(query, n_results<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> query:</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        results <span class="op">=</span> _collection.query(query_texts<span class="op">=</span>[query], n_results<span class="op">=</span>n_results)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> results[<span class="st">&#39;documents&#39;</span>][<span class="dv">0</span>] <span class="cf">if</span> results[<span class="st">&#39;documents&#39;</span>] <span class="cf">else</span> []</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> []</span></code></pre></div>
+<h3 id="document-processing">6.2 Document Processing</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_document(doc_id, file_path, doc_type):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Extract text from PDF</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        text <span class="op">=</span> extract_pdf_text(file_path)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store text sidecar file</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        sidecar_path <span class="op">=</span> <span class="ss">f&quot;</span><span class="sc">{</span>file_path<span class="sc">}</span><span class="ss">.txt&quot;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(sidecar_path, <span class="st">&#39;w&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            f.write(text)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Ingest into vector database</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        ingest_text(<span class="ss">f&quot;doc:</span><span class="sc">{</span>doc_id<span class="sc">}</span><span class="ss">&quot;</span>, text, {<span class="st">&#39;doc_type&#39;</span>: doc_type})</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Error processing document </span><span class="sc">{</span>doc_id<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<h2 id="background-processing">7. Background Processing</h2>
+<h3 id="celery-configuration">7.1 Celery Configuration</h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> celery <span class="im">import</span> Celery</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_celery():</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    broker <span class="op">=</span> os.getenv(<span class="st">&quot;REDIS_URL&quot;</span>, <span class="st">&quot;redis://localhost:6379/0&quot;</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    backend <span class="op">=</span> os.getenv(<span class="st">&quot;REDIS_BACKEND&quot;</span>, <span class="st">&quot;redis://localhost:6379/1&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    celery <span class="op">=</span> Celery(<span class="st">&quot;hr_service&quot;</span>, broker<span class="op">=</span>broker, backend<span class="op">=</span>backend)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    celery.conf.update(</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        task_serializer<span class="op">=</span><span class="st">&quot;json&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        result_serializer<span class="op">=</span><span class="st">&quot;json&quot;</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        accept_content<span class="op">=</span>[<span class="st">&quot;json&quot;</span>],</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        timezone<span class="op">=</span><span class="st">&quot;UTC&quot;</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        enable_utc<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> celery</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>celery <span class="op">=</span> make_celery()</span></code></pre></div>
+<h3 id="background-tasks">7.2 Background Tasks</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="at">@celery.task</span>(name<span class="op">=</span><span class="st">&quot;process.upload&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_uploaded_file_task(doc_id, path, doc_type):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    process_uploaded_file(doc_id, path, doc_type)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="at">@celery.task</span>(name<span class="op">=</span><span class="st">&quot;evaluate.job&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_job_task(job_id):</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    run_job(job_id)</span></code></pre></div>
+<h2 id="error-handling">8. Error Handling</h2>
+<h3 id="basic-error-handling">8.1 Basic Error Handling</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.errorhandler</span>(<span class="dv">404</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> not_found(error):</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Endpoint not found&#39;</span>}), <span class="dv">404</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="at">@app.errorhandler</span>(<span class="dv">500</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> internal_error(error):</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="st">&#39;Internal server error&#39;</span>}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="try-catch-in-api-functions">8.2 Try-Catch in API Functions</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">&#39;/upload&#39;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> upload_documents():</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Main logic here</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> jsonify({<span class="st">&#39;error&#39;</span>: <span class="bu">str</span>(e)}), <span class="dv">500</span></span></code></pre></div>
+<h3 id="fallback-mechanism">8.3 Fallback Mechanism</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate_with_llm(text, job_title):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> llm.available():</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> llm.evaluate_text(text, job_title)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Fallback to basic evaluation</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> basic_evaluation(text, job_title)</span></code></pre></div>
+<h2 id="testing-results">9. Testing Results</h2>
+<h3 id="manual-testing">9.1 Manual Testing</h3>
+<p><strong>Upload Test:</strong></p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/upload <span class="dt">\</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-F</span> <span class="st">&quot;cv=@test_cv.pdf&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-F</span> <span class="st">&quot;report=@test_report.pdf&quot;</span></span></code></pre></div>
+<p><strong>Evaluate Test:</strong></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:5000/evaluate <span class="dt">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&quot;Content-Type: application/json&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{&quot;job_title&quot;:&quot;Backend Engineer&quot;,&quot;cv_id&quot;:1,&quot;report_id&quot;:2}&#39;</span></span></code></pre></div>
+<p><strong>Result Test:</strong></p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:5000/result/1</span></code></pre></div>
+<h3 id="response-examples">9.2 Response Examples</h3>
+<p><strong>Upload Response:</strong></p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cv_id&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;report_id&quot;</span><span class="fu">:</span> <span class="dv">2</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Evaluate Response:</strong></p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;queued&quot;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Result Response:</strong></p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;completed&quot;</span><span class="fu">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;result&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;cv_match_rate&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">75</span><span class="fu">,</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;cv_feedback&quot;</span><span class="fu">:</span> <span class="st">&quot;Good technical skills, needs more experience&quot;</span><span class="fu">,</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;project_score&quot;</span><span class="fu">:</span> <span class="fl">4.0</span><span class="fu">,</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;project_feedback&quot;</span><span class="fu">:</span> <span class="st">&quot;Well implemented basic features&quot;</span><span class="fu">,</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;overall_summary&quot;</span><span class="fu">:</span> <span class="st">&quot;Candidate shows potential for growth&quot;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="challenges-faced">10. Challenges Faced</h2>
+<h3 id="technical-challenges">10.1 Technical Challenges</h3>
+<ol type="1">
+<li><strong>LLM API Integration:</strong> Initial difficulties with API
+key setup and rate limiting</li>
+<li><strong>PDF Text Extraction:</strong> Some PDFs had formatting
+issues affecting text extraction</li>
+<li><strong>Vector Database:</strong> Learning curve for ChromaDB
+implementation</li>
+<li><strong>Background Processing:</strong> Celery configuration and
+Redis setup</li>
+</ol>
+<h3 id="solutions-implemented">10.2 Solutions Implemented</h3>
+<ol type="1">
+<li><strong>Error Handling:</strong> Added comprehensive try-catch
+blocks and fallback mechanisms</li>
+<li><strong>File Processing:</strong> Multiple text extraction methods
+with fallbacks</li>
+<li><strong>Simplified RAG:</strong> Basic implementation with room for
+improvement</li>
+<li><strong>Local Testing:</strong> Implemented fallback to local
+threading when Celery unavailable</li>
+</ol>
+<h2 id="current-limitations">11. Current Limitations</h2>
+<h3 id="technical-limitations">11.1 Technical Limitations</h3>
+<ol type="1">
+<li><strong>Basic Prompt Engineering:</strong> Prompts could be more
+sophisticated</li>
+<li><strong>Limited Error Scenarios:</strong> Haven’t tested all edge
+cases</li>
+<li><strong>Simple RAG Implementation:</strong> Basic vector search
+without advanced techniques</li>
+<li><strong>Limited Testing:</strong> No automated tests
+implemented</li>
+</ol>
+<h3 id="functional-limitations">11.2 Functional Limitations</h3>
+<ol type="1">
+<li><strong>Document Formats:</strong> Only supports PDF and text
+files</li>
+<li><strong>Single Language:</strong> No multi-language support</li>
+<li><strong>Basic Scoring:</strong> Scoring algorithm could be more
+sophisticated</li>
+<li><strong>No Authentication:</strong> API endpoints are not
+secured</li>
+</ol>
+<h2 id="future-improvements">12. Future Improvements</h2>
+<h3 id="technical-enhancements">12.1 Technical Enhancements</h3>
+<ol type="1">
+<li><strong>Advanced Prompt Engineering:</strong> Implement more
+sophisticated prompt chains</li>
+<li><strong>Better RAG System:</strong> Improve context retrieval and
+relevance</li>
+<li><strong>Comprehensive Testing:</strong> Add unit tests and
+integration tests</li>
+<li><strong>Monitoring:</strong> Add logging and monitoring
+capabilities</li>
+</ol>
+<h3 id="feature-enhancements">12.2 Feature Enhancements</h3>
+<ol type="1">
+<li><strong>Multi-format Support:</strong> Support for DOCX, PPTX, and
+other formats</li>
+<li><strong>Authentication:</strong> Add API key or JWT
+authentication</li>
+<li><strong>Dashboard:</strong> Web interface for monitoring and
+management</li>
+<li><strong>Analytics:</strong> Advanced reporting and analytics
+features</li>
+</ol>
+<h2 id="conclusion">13. Conclusion</h2>
+<p>This project successfully implements a basic HR screening service
+with the following features:</p>
+<p>✅ <strong>File Upload System:</strong> Handles CV and report uploads
+✅ <strong>Basic LLM Integration:</strong> Uses Gemini API for
+evaluation ✅ <strong>Vector Database:</strong> Simple RAG
+implementation with ChromaDB ✅ <strong>Background Processing:</strong>
+Celery for async task processing ✅ <strong>API Endpoints:</strong>
+RESTful API for upload, evaluate, and results ✅ <strong>Error
+Handling:</strong> Basic error handling with fallback mechanisms</p>
+<p>The system provides a solid foundation for an AI-powered HR screening
+tool with room for significant improvements and enhancements. The
+implementation demonstrates understanding of backend development, AI
+integration, and modern web application architecture.</p>
+</body>
+</html>

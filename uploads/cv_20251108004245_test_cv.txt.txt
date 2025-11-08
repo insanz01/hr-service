@@ -1,0 +1,21 @@
+John Doe
+Senior Backend Engineer
+
+Experience:
+- 5+ years of experience in backend development
+- Worked with Python, Java, Node.js
+- Developed RESTful APIs and microservices
+- Experience with SQL and NoSQL databases
+- Familiar with cloud platforms (AWS, GCP)
+- Some exposure to AI/ML projects
+
+Technical Skills:
+- Programming: Python, Java, JavaScript
+- Databases: PostgreSQL, MongoDB, Redis
+- Cloud: AWS, GCP
+- APIs: REST, GraphQL
+- AI/ML: Basic experience with TensorFlow and scikit-learn
+
+Education:
+B.S. Computer Science
+University of Technology
