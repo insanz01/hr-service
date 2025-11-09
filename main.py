@@ -9,12 +9,17 @@ import queue
 from werkzeug.utils import secure_filename
 
 # Suppress deprecation warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*datetime.datetime.utcnow.*")
-warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*PydanticDeprecatedSince20.*")
+warnings.filterwarnings(
+    "ignore", category=DeprecationWarning, message=".*datetime.datetime.utcnow.*"
+)
+warnings.filterwarnings(
+    "ignore", category=DeprecationWarning, message=".*PydanticDeprecatedSince20.*"
+)
 
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
     print("✅ .env file loaded successfully")
 except ImportError:
@@ -31,13 +36,18 @@ warnings.filterwarnings(
 try:
     from src.models.database import init_db, Document, Job
     from src.core.rag_engine import ingest_text, ingest_file, has_id, query
-    from src.core.ai_engine_manager import evaluate_cv, evaluate_project, synthesize_overall, get_engine_info
+    from src.core.ai_engine_manager import (
+        evaluate_cv,
+        evaluate_project,
+        synthesize_overall,
+        get_engine_info,
+    )
 
-    DEPENDENCIES_AVAILABLE = True
+    dependenciesAvailable = True
 except ImportError as e:
     print(f"Warning: Some dependencies are missing: {e}")
     print("Application will run in limited mode")
-    DEPENDENCIES_AVAILABLE = False
+    dependenciesAvailable = False
     # Create dummy functions for graceful degradation
     init_db = lambda: None
     Document = type(
@@ -66,10 +76,10 @@ except ImportError as e:
 try:
     from src.workers.queue_manager import queue_manager
 
-    QUEUE_MANAGER_AVAILABLE = True
+    queueManagerAvailable = True
 except ImportError:
     print("Warning: Queue manager not available, falling back to local threading")
-    QUEUE_MANAGER_AVAILABLE = False
+    queueManagerAvailable = False
     queue_manager = type(
         "QueueManager",
         (),
@@ -149,7 +159,11 @@ _upload_thread.start()
 
 @app.route("/")
 def home():
-    engine_info = get_engine_info() if DEPENDENCIES_AVAILABLE else {"current_engine": "none", "available": False}
+    engine_info = (
+        get_engine_info()
+        if dependenciesAvailable
+        else {"current_engine": "none", "available": False}
+    )
     return jsonify(
         {
             "message": "HR Service",
@@ -173,12 +187,14 @@ def home():
 def ai_engine_info():
     """Get information about the current AI engine"""
     try:
-        if not DEPENDENCIES_AVAILABLE:
-            return jsonify({
-                "error": "Dependencies not available",
-                "current_engine": "none",
-                "available": False
-            }), 503
+        if not dependenciesAvailable:
+            return jsonify(
+                {
+                    "error": "Dependencies not available",
+                    "current_engine": "none",
+                    "available": False,
+                }
+            ), 503
 
         engine_info = get_engine_info()
         status_code = 200 if engine_info["available"] else 503
@@ -194,7 +210,7 @@ def ingest_manual():
     print(f"🔄 [INGEST] Starting ingest process at {start_time}")
 
     try:
-        if not DEPENDENCIES_AVAILABLE:
+        if not dependenciesAvailable:
             print("❌ [INGEST] Dependencies not available")
             return jsonify(
                 {"error": "Service tidak tersedia - dependencies missing"}
@@ -303,7 +319,7 @@ def upload_documents():
     print(f"🔄 [UPLOAD] Starting document upload process at {start_time}")
 
     try:
-        if not DEPENDENCIES_AVAILABLE:
+        if not dependenciesAvailable:
             print("❌ [UPLOAD] Dependencies not available")
             return jsonify(
                 {"error": "Service tidak tersedia - dependencies missing"}
@@ -350,7 +366,9 @@ def upload_documents():
         print("📤 [UPLOAD] Adding CV to processing queue...")
         upload_queue.put({"doc_id": cv_id, "path": cv_path, "doc_type": "cv"})
 
-        cv_processing_time = (datetime.now(timezone.utc) - cv_start_time).total_seconds()
+        cv_processing_time = (
+            datetime.now(timezone.utc) - cv_start_time
+        ).total_seconds()
         print(f"⏱️ [UPLOAD] CV processing completed in {cv_processing_time:.2f} seconds")
 
         # Process Report file
@@ -377,13 +395,17 @@ def upload_documents():
             {"doc_id": report_id, "path": report_path, "doc_type": "report"}
         )
 
-        report_processing_time = (datetime.now(timezone.utc) - report_start_time).total_seconds()
+        report_processing_time = (
+            datetime.now(timezone.utc) - report_start_time
+        ).total_seconds()
         print(
             f"⏱️ [UPLOAD] Report processing completed in {report_processing_time:.2f} seconds"
         )
 
         # Calculate total processing time
-        total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+        total_processing_time = (
+            datetime.now(timezone.utc) - start_time
+        ).total_seconds()
         print(
             f"📊 [UPLOAD] File sizes - CV: {cv_file_size} bytes, Report: {report_file_size} bytes"
         )
@@ -468,7 +490,9 @@ def _run_job(job_id):
         cv_res = evaluate_cv(cv_text, job["job_title"] or "", cv_snippets)
         pr_res = evaluate_project(report_text, case_brief_text, report_snippets)
         overall = synthesize_overall(cv_res, pr_res)
-        result = overall.model_dump() if hasattr(overall, 'model_dump') else overall.dict()
+        result = (
+            overall.model_dump() if hasattr(overall, "model_dump") else overall.dict()
+        )
 
         Job.update_status(job_id, "completed", result_json=json.dumps(result))
     except Exception as e:
@@ -482,7 +506,7 @@ def evaluate():
     print(f"🔄 [EVALUATE] Starting evaluation process at {start_time}")
 
     try:
-        if not DEPENDENCIES_AVAILABLE:
+        if not dependenciesAvailable:
             print("❌ [EVALUATE] Dependencies not available")
             return jsonify(
                 {"error": "Service tidak tersedia - dependencies missing"}
@@ -546,7 +570,7 @@ def evaluate():
         # Jalankan evaluasi via Simple Redis Worker
         try:
             print("🚀 [EVALUATE] Attempting to submit job to Redis queue...")
-            if QUEUE_MANAGER_AVAILABLE:
+            if queueManagerAvailable:
                 print(
                     "📤 [EVALUATE] Queue manager is available, submitting to Redis..."
                 )
@@ -575,7 +599,9 @@ def evaluate():
             t.start()
             print("✅ [EVALUATE] Local processing thread started successfully")
 
-            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            total_processing_time = (
+                datetime.now(timezone.utc) - start_time
+            ).total_seconds()
             print(
                 f"⏱️ [EVALUATE] Total submission time (fallback): {total_processing_time:.2f} seconds"
             )
@@ -590,7 +616,9 @@ def evaluate():
             t.start()
             print("✅ [EVALUATE] Local processing thread started successfully")
 
-            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            total_processing_time = (
+                datetime.now(timezone.utc) - start_time
+            ).total_seconds()
             print(
                 f"⏱️ [EVALUATE] Total submission time (final fallback): {total_processing_time:.2f} seconds"
             )
@@ -621,8 +649,8 @@ def health_check():
                     "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "status": "unknown",
                     "message": "Health monitoring not available",
-                    "dependencies_available": DEPENDENCIES_AVAILABLE,
-                    "queue_manager_available": QUEUE_MANAGER_AVAILABLE,
+                    "dependencies_available": dependenciesAvailable,
+                    "queue_manager_available": queueManagerAvailable,
                 }
             ), 503
     except Exception as e:
@@ -648,8 +676,8 @@ def metrics():
                 {
                     "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "message": "Metrics monitoring not available",
-                    "dependencies_available": DEPENDENCIES_AVAILABLE,
-                    "queue_manager_available": QUEUE_MANAGER_AVAILABLE,
+                    "dependencies_available": dependenciesAvailable,
+                    "queue_manager_available": queueManagerAvailable,
                 }
             ), 503
     except Exception as e:
@@ -687,7 +715,9 @@ def get_result(job_id):
             # Try to get result from Simple Redis Worker with proper timeout
             redis_start_time = datetime.now(timezone.utc)
             result = queue_manager.get_result(job_id, timeout=5)
-            redis_query_time = (datetime.now(timezone.utc) - redis_start_time).total_seconds()
+            redis_query_time = (
+                datetime.now(timezone.utc) - redis_start_time
+            ).total_seconds()
 
             print(
                 f"🔎 [RESULT] Redis query completed in {redis_query_time:.2f} seconds"
@@ -753,7 +783,9 @@ def get_result(job_id):
                 print(
                     f"⏳ [RESULT] No result found in Redis for job {job_id}, still processing..."
                 )
-                total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+                total_processing_time = (
+                    datetime.now(timezone.utc) - start_time
+                ).total_seconds()
                 print(
                     f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
                 )
@@ -769,7 +801,9 @@ def get_result(job_id):
                 print(f"💾 [RESULT] Found result in database for job {job_id}")
                 db_start_time = datetime.now(timezone.utc)
                 result = json.loads(job_dict["result_json"])
-                db_query_time = (datetime.now(timezone.utc) - db_start_time).total_seconds()
+                db_query_time = (
+                    datetime.now(timezone.utc) - db_start_time
+                ).total_seconds()
                 print(
                     f"🔎 [RESULT] Database query completed in {db_query_time:.2f} seconds"
                 )
@@ -802,12 +836,16 @@ def get_result(job_id):
             print(f"🔄 [RESULT] Transforming result to specification format...")
             transform_start_time = datetime.now(timezone.utc)
             transformed_result = _transform_result_to_spec_format(result or {})
-            transform_time = (datetime.now(timezone.utc) - transform_start_time).total_seconds()
+            transform_time = (
+                datetime.now(timezone.utc) - transform_start_time
+            ).total_seconds()
             print(
                 f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds"
             )
 
-            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            total_processing_time = (
+                datetime.now(timezone.utc) - start_time
+            ).total_seconds()
             print(
                 f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
             )
@@ -819,7 +857,9 @@ def get_result(job_id):
             # Failed job
             error_message = job_dict["error_message"] or "Unknown error"
             print(f"❌ [RESULT] Job {job_id} failed with error: {error_message}")
-            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            total_processing_time = (
+                datetime.now(timezone.utc) - start_time
+            ).total_seconds()
             print(
                 f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
             )
