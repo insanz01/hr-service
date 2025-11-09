@@ -49,7 +49,43 @@ HR Service is a comprehensive web application that automates the initial screeni
 
 ## Quick Start
 
-### Using Docker (Recommended)
+### Cara Menjalankan Proyek dengan Script docker-start.sh (Paling Mudah)
+
+Script `docker-start.sh` menyediakan cara termudah untuk menjalankan proyek ini dengan satu perintah:
+
+```bash
+# 1. Inisialisasi environment (sekali saja)
+./docker-start.sh init
+
+# 2. Jalankan semua services
+./docker-start.sh start
+
+# 3. Cek status
+./docker-start.sh status
+
+# 4. Test API
+curl http://localhost:5000/
+```
+
+**Perintah Berguna Lainnya:**
+```bash
+# Berhentikan semua services
+./docker-start.sh stop
+
+# Restart services
+./docker-start.sh restart
+
+# Lihat logs
+./docker-start.sh logs -f
+
+# Masuk ke container shell
+./docker-start.sh shell api
+
+# Cleanup semua resources Docker
+./docker-start.sh cleanup
+```
+
+### Using Docker (Manual)
 
 1. **Clone and Setup**:
    ```bash

@@ -2,11 +2,25 @@ import warnings
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import threading
 import queue
 from werkzeug.utils import secure_filename
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*datetime.datetime.utcnow.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*PydanticDeprecatedSince20.*")
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ .env file loaded successfully")
+except ImportError:
+    print("⚠️ python-dotenv not installed, using system environment variables only")
+except Exception as e:
+    print(f"⚠️ Error loading .env file: {e}")
 
 # Suppress Flask development server warning
 warnings.filterwarnings(
@@ -17,7 +31,7 @@ warnings.filterwarnings(
 try:
     from src.models.database import init_db, Document, Job
     from src.core.rag_engine import ingest_text, ingest_file, has_id, query
-    from src.core.ai_engine import evaluate_cv, evaluate_project, synthesize_overall
+    from src.core.ai_engine_manager import evaluate_cv, evaluate_project, synthesize_overall, get_engine_info
 
     DEPENDENCIES_AVAILABLE = True
 except ImportError as e:
@@ -46,6 +60,7 @@ except ImportError as e:
     evaluate_cv = lambda *a, **k: type("Result", (), {"dict": lambda: {}})()
     evaluate_project = lambda *a, **k: type("Result", (), {"dict": lambda: {}})()
     synthesize_overall = lambda *a, **k: type("Result", (), {"dict": lambda: {}})()
+    get_engine_info = lambda: {"current_engine": "none", "available": False}
 
 # Simple Redis-based worker instead of Celery
 try:
@@ -70,10 +85,10 @@ except ImportError:
     MONITORING_AVAILABLE = False
     comprehensive_health_check = lambda: {
         "status": "unknown",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
     }
     get_service_metrics = lambda: {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "error": "Monitoring not available",
     }
 
@@ -134,10 +149,12 @@ _upload_thread.start()
 
 @app.route("/")
 def home():
+    engine_info = get_engine_info() if DEPENDENCIES_AVAILABLE else {"current_engine": "none", "available": False}
     return jsonify(
         {
             "message": "HR Service",
-            "version": "1.2.0",
+            "version": "1.3.0-pydantic-ai",
+            "ai_engine": engine_info,
             "endpoints": {
                 "upload": "/upload",
                 "evaluate": "/evaluate",
@@ -145,15 +162,35 @@ def home():
                 "ingest": "/ingest",
                 "health": "/health",
                 "metrics": "/metrics",
+                "ai-engine": "/ai-engine",
             },
         }
     )
 
 
+# ========= AI Engine Info Endpoint =========
+@app.route("/ai-engine", methods=["GET"])
+def ai_engine_info():
+    """Get information about the current AI engine"""
+    try:
+        if not DEPENDENCIES_AVAILABLE:
+            return jsonify({
+                "error": "Dependencies not available",
+                "current_engine": "none",
+                "available": False
+            }), 503
+
+        engine_info = get_engine_info()
+        status_code = 200 if engine_info["available"] else 503
+        return jsonify(engine_info), status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ========= Ingest Endpoint (manual) =========
 @app.route("/ingest", methods=["POST"])
 def ingest_manual():
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     print(f"🔄 [INGEST] Starting ingest process at {start_time}")
 
     try:
@@ -196,7 +233,7 @@ def ingest_manual():
             print(f"🚀 [INGEST] Starting ingestion process for {temp_path}")
             doc_id = ingest_file(temp_path, doc_type=doc_type, title=title)
 
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             processing_time = (end_time - start_time).total_seconds()
             print(f"✅ [INGEST] Ingestion completed successfully. Doc ID: {doc_id}")
             print(f"⏱️ [INGEST] Total processing time: {processing_time:.2f} seconds")
@@ -242,7 +279,7 @@ def ingest_manual():
             print(f"🚀 [INGEST] Starting ingestion process for {path}")
             doc_id = ingest_file(path, doc_type=doc_type, title=title)
 
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             processing_time = (end_time - start_time).total_seconds()
             print(f"✅ [INGEST] Ingestion completed successfully. Doc ID: {doc_id}")
             print(f"⏱️ [INGEST] Total processing time: {processing_time:.2f} seconds")
@@ -250,7 +287,7 @@ def ingest_manual():
             return jsonify({"id": doc_id}), 201
 
     except Exception as e:
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         processing_time = (end_time - start_time).total_seconds()
         print(
             f"❌ [INGEST] Error occurred after {processing_time:.2f} seconds: {str(e)}"
@@ -262,7 +299,7 @@ def ingest_manual():
 # ========= Upload Endpoint =========
 @app.route("/upload", methods=["POST"])
 def upload_documents():
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     print(f"🔄 [UPLOAD] Starting document upload process at {start_time}")
 
     try:
@@ -295,7 +332,7 @@ def upload_documents():
 
         # Process CV file
         print("💼 [UPLOAD] Processing CV file...")
-        cv_start_time = datetime.utcnow()
+        cv_start_time = datetime.now(timezone.utc)
         cv_name = secure_filename(cv_file.filename)
         cv_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         cv_path = os.path.join(UPLOAD_DIR, f"cv_{cv_timestamp}_{cv_name}")
@@ -313,12 +350,12 @@ def upload_documents():
         print("📤 [UPLOAD] Adding CV to processing queue...")
         upload_queue.put({"doc_id": cv_id, "path": cv_path, "doc_type": "cv"})
 
-        cv_processing_time = (datetime.utcnow() - cv_start_time).total_seconds()
+        cv_processing_time = (datetime.now(timezone.utc) - cv_start_time).total_seconds()
         print(f"⏱️ [UPLOAD] CV processing completed in {cv_processing_time:.2f} seconds")
 
         # Process Report file
         print("📄 [UPLOAD] Processing Report file...")
-        report_start_time = datetime.utcnow()
+        report_start_time = datetime.now(timezone.utc)
         report_name = secure_filename(report_file.filename)
         report_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         report_path = os.path.join(
@@ -340,13 +377,13 @@ def upload_documents():
             {"doc_id": report_id, "path": report_path, "doc_type": "report"}
         )
 
-        report_processing_time = (datetime.utcnow() - report_start_time).total_seconds()
+        report_processing_time = (datetime.now(timezone.utc) - report_start_time).total_seconds()
         print(
             f"⏱️ [UPLOAD] Report processing completed in {report_processing_time:.2f} seconds"
         )
 
         # Calculate total processing time
-        total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+        total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
         print(
             f"📊 [UPLOAD] File sizes - CV: {cv_file_size} bytes, Report: {report_file_size} bytes"
         )
@@ -360,7 +397,7 @@ def upload_documents():
         return jsonify(response_data), 201
 
     except Exception as e:
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         processing_time = (end_time - start_time).total_seconds()
         print(
             f"❌ [UPLOAD] Error occurred after {processing_time:.2f} seconds: {str(e)}"
@@ -431,7 +468,7 @@ def _run_job(job_id):
         cv_res = evaluate_cv(cv_text, job["job_title"] or "", cv_snippets)
         pr_res = evaluate_project(report_text, case_brief_text, report_snippets)
         overall = synthesize_overall(cv_res, pr_res)
-        result = overall.dict()
+        result = overall.model_dump() if hasattr(overall, 'model_dump') else overall.dict()
 
         Job.update_status(job_id, "completed", result_json=json.dumps(result))
     except Exception as e:
@@ -441,7 +478,7 @@ def _run_job(job_id):
 # ========= Evaluate Endpoint =========
 @app.route("/evaluate", methods=["POST"])
 def evaluate():
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     print(f"🔄 [EVALUATE] Starting evaluation process at {start_time}")
 
     try:
@@ -517,7 +554,7 @@ def evaluate():
                 if success:
                     print("✅ [EVALUATE] Job successfully submitted to Redis queue")
                     total_processing_time = (
-                        datetime.utcnow() - start_time
+                        datetime.now(timezone.utc) - start_time
                     ).total_seconds()
                     print(
                         f"⏱️ [EVALUATE] Total submission time: {total_processing_time:.2f} seconds"
@@ -538,7 +575,7 @@ def evaluate():
             t.start()
             print("✅ [EVALUATE] Local processing thread started successfully")
 
-            total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             print(
                 f"⏱️ [EVALUATE] Total submission time (fallback): {total_processing_time:.2f} seconds"
             )
@@ -553,14 +590,14 @@ def evaluate():
             t.start()
             print("✅ [EVALUATE] Local processing thread started successfully")
 
-            total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             print(
                 f"⏱️ [EVALUATE] Total submission time (final fallback): {total_processing_time:.2f} seconds"
             )
             return jsonify({"id": str(job_id), "status": "queued"}), 202
 
     except Exception as e:
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         processing_time = (end_time - start_time).total_seconds()
         print(
             f"❌ [EVALUATE] Error occurred after {processing_time:.2f} seconds: {str(e)}"
@@ -581,7 +618,7 @@ def health_check():
         else:
             return jsonify(
                 {
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "status": "unknown",
                     "message": "Health monitoring not available",
                     "dependencies_available": DEPENDENCIES_AVAILABLE,
@@ -591,7 +628,7 @@ def health_check():
     except Exception as e:
         return jsonify(
             {
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                 "status": "unhealthy",
                 "error": str(e),
             }
@@ -609,7 +646,7 @@ def metrics():
         else:
             return jsonify(
                 {
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
                     "message": "Metrics monitoring not available",
                     "dependencies_available": DEPENDENCIES_AVAILABLE,
                     "queue_manager_available": QUEUE_MANAGER_AVAILABLE,
@@ -617,14 +654,14 @@ def metrics():
             ), 503
     except Exception as e:
         return jsonify(
-            {"timestamp": datetime.utcnow().isoformat() + "Z", "error": str(e)}
+            {"timestamp": datetime.now(timezone.utc).isoformat() + "Z", "error": str(e)}
         ), 500
 
 
 # ========= Result Endpoint =========
 @app.route("/result/<int:job_id>", methods=["GET"])
 def get_result(job_id):
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     print(f"🔍 [RESULT] Starting result retrieval for job {job_id} at {start_time}")
 
     try:
@@ -648,9 +685,9 @@ def get_result(job_id):
                 f"⏳ [RESULT] Job {job_id} is still {status}, checking Redis for results..."
             )
             # Try to get result from Simple Redis Worker with proper timeout
-            redis_start_time = datetime.utcnow()
+            redis_start_time = datetime.now(timezone.utc)
             result = queue_manager.get_result(job_id, timeout=5)
-            redis_query_time = (datetime.utcnow() - redis_start_time).total_seconds()
+            redis_query_time = (datetime.now(timezone.utc) - redis_start_time).total_seconds()
 
             print(
                 f"🔎 [RESULT] Redis query completed in {redis_query_time:.2f} seconds"
@@ -666,7 +703,7 @@ def get_result(job_id):
                     )
                     Job.update_status(job_id, "failed", error_message=result["error"])
                     total_processing_time = (
-                        datetime.utcnow() - start_time
+                        datetime.now(timezone.utc) - start_time
                     ).total_seconds()
                     print(
                         f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
@@ -689,17 +726,17 @@ def get_result(job_id):
                     )
 
                     # Transform result to match specification format
-                    transform_start_time = datetime.utcnow()
+                    transform_start_time = datetime.now(timezone.utc)
                     transformed_result = _transform_result_to_spec_format(result)
                     transform_time = (
-                        datetime.utcnow() - transform_start_time
+                        datetime.now(timezone.utc) - transform_start_time
                     ).total_seconds()
                     print(
                         f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds"
                     )
 
                     total_processing_time = (
-                        datetime.utcnow() - start_time
+                        datetime.now(timezone.utc) - start_time
                     ).total_seconds()
                     print(
                         f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
@@ -716,7 +753,7 @@ def get_result(job_id):
                 print(
                     f"⏳ [RESULT] No result found in Redis for job {job_id}, still processing..."
                 )
-                total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+                total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
                 print(
                     f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
                 )
@@ -730,9 +767,9 @@ def get_result(job_id):
             # Get result from database first
             if job_dict["result_json"]:
                 print(f"💾 [RESULT] Found result in database for job {job_id}")
-                db_start_time = datetime.utcnow()
+                db_start_time = datetime.now(timezone.utc)
                 result = json.loads(job_dict["result_json"])
-                db_query_time = (datetime.utcnow() - db_start_time).total_seconds()
+                db_query_time = (datetime.now(timezone.utc) - db_start_time).total_seconds()
                 print(
                     f"🔎 [RESULT] Database query completed in {db_query_time:.2f} seconds"
                 )
@@ -741,10 +778,10 @@ def get_result(job_id):
                     f"⚠️ [RESULT] No result in database for job {job_id}, checking Redis..."
                 )
                 # If result_json is empty, try to get from Redis (for SimpleWorker jobs)
-                redis_start_time = datetime.utcnow()
+                redis_start_time = datetime.now(timezone.utc)
                 result = queue_manager.get_result(job_id, timeout=5)
                 redis_query_time = (
-                    datetime.utcnow() - redis_start_time
+                    datetime.now(timezone.utc) - redis_start_time
                 ).total_seconds()
                 print(
                     f"🔎 [RESULT] Redis fallback query completed in {redis_query_time:.2f} seconds"
@@ -763,14 +800,14 @@ def get_result(job_id):
 
             # Transform result to match specification format
             print(f"🔄 [RESULT] Transforming result to specification format...")
-            transform_start_time = datetime.utcnow()
+            transform_start_time = datetime.now(timezone.utc)
             transformed_result = _transform_result_to_spec_format(result or {})
-            transform_time = (datetime.utcnow() - transform_start_time).total_seconds()
+            transform_time = (datetime.now(timezone.utc) - transform_start_time).total_seconds()
             print(
                 f"🔄 [RESULT] Result transformation completed in {transform_time:.2f} seconds"
             )
 
-            total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             print(
                 f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
             )
@@ -782,7 +819,7 @@ def get_result(job_id):
             # Failed job
             error_message = job_dict["error_message"] or "Unknown error"
             print(f"❌ [RESULT] Job {job_id} failed with error: {error_message}")
-            total_processing_time = (datetime.utcnow() - start_time).total_seconds()
+            total_processing_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             print(
                 f"⏱️ [RESULT] Total result retrieval time: {total_processing_time:.2f} seconds"
             )
@@ -796,7 +833,7 @@ def get_result(job_id):
             ), 500
 
     except Exception as e:
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         processing_time = (end_time - start_time).total_seconds()
         print(
             f"❌ [RESULT] Error occurred after {processing_time:.2f} seconds: {str(e)}"

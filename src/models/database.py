@@ -1,13 +1,83 @@
 import sqlite3
 import os
+import time
+import random
+import logging
+
+# Setup logging
+logger = logging.getLogger(__name__)
+
+
+def _retry_with_backoff(func, *args, max_retries=3, base_delay=0.5, **kwargs):
+    """
+    Enhanced retry function with exponential backoff for database operations.
+
+    Args:
+        func: Function to retry
+        max_retries: Maximum number of retries
+        base_delay: Base delay in seconds
+        *args, **kwargs: Arguments to pass to function
+
+    Returns:
+        Function result if successful
+
+    Raises:
+        RuntimeError: If all retries fail
+    """
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            result = func(*args, **kwargs)
+            if attempt > 0:
+                logger.info(f"Database operation succeeded after {attempt} retries")
+            return result
+
+        except Exception as e:
+            last_exception = e
+            error_str = str(e).lower()
+
+            # SQLite specific error patterns
+            is_retryable = (
+                "database is locked" in error_str or
+                "unable to open database file" in error_str or
+                "connection timed out" in error_str or
+                "busy" in error_str or
+                "timeout" in error_str or
+                "i/o error" in error_str or
+                "disk" in error_str or
+                "permission" in error_str
+            )
+
+            if not is_retryable:
+                logger.error(f"Non-retryable database error: {e}")
+                raise RuntimeError(f"Database operation failed with non-retryable error: {str(e)}")
+
+            if attempt == max_retries:
+                logger.error(f"Max retries ({max_retries}) reached for database operation")
+                raise RuntimeError(f"Database operation failed after {max_retries} retries: {str(e)}")
+
+            # Calculate exponential backoff with jitter
+            delay = base_delay * (2 ** attempt) + random.uniform(0.1, 0.5)
+            delay = min(delay, 10)  # Cap at 10 seconds
+
+            logger.warning(f"Database operation failed (attempt {attempt + 1}/{max_retries + 1}), retrying in {delay:.2f}s: {e}")
+            time.sleep(delay)
+
+    raise RuntimeError(f"Database operation failed after {max_retries} retries. Last error: {last_exception}")
 
 
 def get_db_connection():
-    """Get database connection"""
-    db_path = os.path.join(os.getcwd(), "database.db")
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Get database connection with retry mechanism"""
+    def _create_connection():
+        db_path = os.path.join(os.getcwd(), "database.db")
+        conn = sqlite3.connect(db_path, timeout=30.0)  # Increased timeout
+        conn.row_factory = sqlite3.Row
+        # Enable WAL mode for better concurrent access
+        conn.execute("PRAGMA journal_mode=WAL")
+        return conn
+
+    return _retry_with_backoff(_create_connection, max_retries=5, base_delay=0.2)
 
 
 def init_db():
@@ -402,14 +472,20 @@ class Job:
 
     @staticmethod
     def update_status(job_id, status, result_json=None, error_message=None):
-        conn = get_db_connection()
-        conn.execute(
-            "UPDATE jobs SET status = ?, result_json = ?, error_message = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            (status, result_json, error_message, job_id),
-        )
-        conn.commit()
-        conn.close()
-        return True
+        """Update job status with retry mechanism for critical operations"""
+        def _update_operation():
+            conn = get_db_connection()
+            try:
+                conn.execute(
+                    "UPDATE jobs SET status = ?, result_json = ?, error_message = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (status, result_json, error_message, job_id),
+                )
+                conn.commit()
+                return True
+            finally:
+                conn.close()
+
+        return _retry_with_backoff(_update_operation, max_retries=4, base_delay=0.3)
 
     @staticmethod
     def count():
