@@ -1,0 +1,25 @@
+John Doe
+Senior Python Backend Developer
+
+EXPERIENCE:
+- 5+ years experience in Python backend development
+- Strong experience with Django, FastAPI, Flask
+- Expert in PostgreSQL, MongoDB, Redis
+- Cloud experience with AWS and Docker
+- Built scalable REST APIs for e-commerce
+
+SKILLS:
+- Python: Expert
+- Databases: PostgreSQL, MongoDB, Redis
+- Frameworks: Django, FastAPI, Flask
+- Cloud: AWS EC2, S3, Docker
+- Other: Git, CI/CD, Microservices
+
+EDUCATION:
+- BS Computer Science, University of Technology
+- AWS Certified Solutions Architect
+
+PROJECTS:
+- E-commerce Platform: Led backend team for 1M+ users
+- API Gateway: Built high-throughput API serving 10K requests/sec
+- Data Pipeline: Created real-time data processing system

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HR Service API Documentation - Job Description & Case Study</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">HR Service API Documentation - Job Description & Case Study</h1>
+</header>
+
+<h1 id="job-description---product-engineer-backend-2025">Job Description - Product Engineer (Backend) 2025</h1>
+<p><strong>Perusahaan:</strong> Rakamin is hiring a Product Engineer (Backend) to work on Rakamin. We're looking for dedicated engineers who write code they're proud of and who are eager to keep scaling and improving complex systems, including those powered by AI.</p>
+<h2 id="about-the-job">About the Job:</h2>
+<p>You'll be building new product features alongside a frontend engineer and product manager using our Agile methodology, as well as addressing issues to ensure our apps are robust and our codebase is clean. This role touches on building AI-powered systems, designing and orchestrating how large language models (LLMs) integrate into Rakamin's product ecosystem.</p>
+<h2 id="contoh-pekerjaan">Contoh Pekerjaan:</h2>
+<ul>
+<li>Collaborating with frontend engineers and 3rd parties to build robust backend solutions.</li>
+<li>Developing and maintaining server-side logic for central database, ensuring high performance.</li>
+<li>Designing and fine-tuning AI prompts.</li>
+<li>Building <strong>LLM chaining flows</strong>.</li>
+<li>Implementing <strong>Retrieval-Augmented Generation (RAG)</strong> by embedding and retrieving context from vector databases.</li>
+<li>Handling <strong>long-running AI processes gracefully</strong> including job orchestration, async background workers, and retry mechanisms .</li>
+<li>Designing safeguards for uncontrolled scenarios: managing failure cases and mitigating the <strong>randomness/nondeterminism of LLM outputs</strong>.</li>
+<li>Writing reusable, testable, and efficient code.</li>
+<li>Strengthening our test coverage with RSpec.</li>
+</ul>
+<h2 id="requirements--about-you">Requirements / About You:</h2>
+<ul>
+<li>Strong track record on <strong>backend technologies</strong> of web apps, ideally with exposure to <strong>AI/LLM development</strong> or a strong desire to learn.</li>
+<li>Experience with backend languages and frameworks (<strong>Node.js, Django, Rails</strong>).</li>
+<li>Modern backend tooling and technologies:
+<ul>
+<li>Database management (MySQL, PostgreSQL, MongoDB).</li>
+<li>RESTful APIs.</li>
+<li>Cloud technologies (AWS, Google Cloud, Azure).</li>
+<li>Server-side languages (Java, Python, Ruby, or JavaScript).</li>
+<li>Scalable application design principles.</li>
+<li>Familiarity with <strong>LLM APIs, embeddings, vector databases</strong> and <strong>prompt design best practices</strong>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="lokasi">Lokasi:</h2>
+<p>Remote, only looking for people based in <strong>Indonesia</strong> .</p>
+<hr />
+<h1 id="case-study-brief---inti-logika--deliverables">Case Study Brief - Inti Logika & Deliverables</h1>
+<h2 id="objective">Objective:</h2>
+<p>Build a backend service that automates the initial screening of a job application.</p>
+<h2 id="core-logic--data-flow---inputs-to-be-evaluated">Core Logic & Data Flow - Inputs to be Evaluated:</h2>
+<ol>
+<li>Candidate CV (PDF).</li>
+<li>Project Report (PDF).</li>
+</ol>
+<h2 id="deliverables---backend-service-api-endpoints">Deliverables - Backend Service (API Endpoints):</h2>
+<ul>
+<li><strong>POST /upload</strong>: Accepts Candidate CV & Project Report (multipart/form-data), stores files, returns document IDs .</li>
+<li><strong>POST /evaluate</strong>: Triggers <strong>asynchronous</strong> AI evaluation pipeline, receives job title and document IDs, immediately returns a job ID .</li>
+<li><strong>GET /result/{id}</strong>: Retrieves status ("queued", "processing", "completed") and final result .</li>
+</ul>
+<h2 id="deliverables---evaluation-pipeline-components">Deliverables - Evaluation Pipeline Components:</h2>
+<ol>
+<li><strong>RAG (Context Retrieval)</strong>: Ingest all System-Internal Documents into a vector database, retrieve relevant sections, and inject into prompts .</li>
+<li><strong>Prompt Design & LLM Chaining</strong>: Pipeline consists of CV Evaluation, Project Report Evaluation, and Final Analysis synthesis .</li>
+<li><strong>Long-Running Process Handling</strong>: POST /evaluate must not block. Use job ID to track status .</li>
+<li><strong>Error Handling & Randomness Control</strong>: Simulate/handle LLM API failures (timeouts, rate limits), implement <strong>retries/back-off</strong>, control LLM temperature .</li>
+</ol>
+<h2 id="project-report-deliverable-parameters-fokus-project">Project Report Deliverable Parameters (fokus Project):</h2>
+<ul>
+<li>Correctness (meets requirements: prompt design, chaining, <strong>RAG</strong>, handling errors).</li>
+<li>Code Quality (clean, modular, testable).</li>
+<li>Resilience (handles failures, retries).</li>
+<li>Documentation (clear README, explanation of trade-offs).</li>
+<li>Creativity / Bonus (optional improvements like authentication, deployment).</li>
+</ul>
+<hr />
+<h1 id="scoring-rubric-for-case-study-evaluation">Scoring Rubric for Case Study Evaluation</h1>
+<h2 id="cv-match-evaluation-1-5-scale-per-parameter">CV Match Evaluation (1-5 scale per parameter)</h2>
+<table>
+<tbody>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Scoring Guide</th>
+<th style="text-align: left;">Weight</th>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Technical Skills Match</strong></td>
+<td style="text-align: left;">Alignment with job requirements (backend, databases, APIs, cloud, Al/LLM).</td>
+<td style="text-align: left;">1=Irrelevant skills, 4=Strong match, <strong>5=Excellent match + Al/LLM exposure</strong>.</td>
+<td style="text-align: left;">40%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Experience Level</strong></td>
+<td style="text-align: left;">Years of experience and project complexity.</td>
+<td style="text-align: left;">1=&lt;1 yr, 3=2-3 yrs with mid-scale projects, <strong>5=5+ yrs / high-impact projects</strong>.</td>
+<td style="text-align: left;">25%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Relevant Achievements</strong></td>
+<td style="text-align: left;">Impact of past work (scaling, performance, adoption).</td>
+<td style="text-align: left;">1=No clear achievements, 3=Some measurable outcomes, <strong>5=Major measurable impact</strong>.</td>
+<td style="text-align: left;">20%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cultural/Collaboration Fit</strong></td>
+<td style="text-align: left;">Communication, learning mindset, teamwork/leadership.</td>
+<td style="text-align: left;">1=Not demonstrated, 3=Average, <strong>5=Excellent and well-demonstrated</strong>.</td>
+<td style="text-align: left;">15%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="project-deliverable-evaluation-1-5-scale-per-parameter">Project Deliverable Evaluation (1-5 scale per parameter)</h2>
+<table>
+<tbody>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Scoring Guide</th>
+<th style="text-align: left;">Weight</th>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Correctness (Prompt & Chaining)</strong></td>
+<td style="text-align: left;">Implements prompt design, LLM chaining, RAG context injection.</td>
+<td style="text-align: left;">1=Not implemented, 4=Works correctly, <strong>5=Fully correct + thoughtful</strong>.</td>
+<td style="text-align: left;">30%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Code Quality & Structure</strong></td>
+<td style="text-align: left;">Clean, modular, reusable, tested.</td>
+<td style="text-align: left;">1=Poor, 4=Good structure + some tests, <strong>5=Excellent quality + strong tests</strong>.</td>
+<td style="text-align: left;">25%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Resilience & Error Handling</strong></td>
+<td style="text-align: left;">Handles long jobs, retries, randomness, API failures.</td>
+<td style="text-align: left;">1=Missing, 4=Solid handling, <strong>5=Robust, production-ready</strong>.</td>
+<td style="text-align: left;">20%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Documentation & Explanation</strong></td>
+<td style="text-align: left;">README clarity, setup instructions, trade-off explanations.</td>
+<td style="text-align: left;">1=Missing, 4=Clear, <strong>5=Excellent + insightful</strong>.</td>
+<td style="text-align: left;">15%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Creativity / Bonus</strong></td>
+<td style="text-align: left;">Extra features beyond requirements.</td>
+<td style="text-align: left;">1=None, 4=Strong enhancements, <strong>5=Outstanding creativity</strong>.</td>
+<td style="text-align: left;">10%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="overall-evaluation-output">Overall Evaluation Output:</h2>
+<ul>
+<li><strong>CV Match Rate:</strong> Weighted Average (1-5) → Convert to 0-1 decimal $(\times 0.2)$.</li>
+<li><strong>Project Score:</strong> Weighted Average (1-5).</li>
+<li><strong>Overall Summary:</strong> 3-5 sentences (strengths, gaps, recommendations).</li>
+</ul>
+</body>
+</html>

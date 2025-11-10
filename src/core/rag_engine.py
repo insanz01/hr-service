@@ -1,6 +1,12 @@
 import os
 import warnings
+import time
+import random
+import logging
 from typing import List, Dict, Any
+
+# Setup logging
+logger = logging.getLogger(__name__)
 
 # Suppress warnings
 warnings.filterwarnings("ignore", category=ResourceWarning, message=".*unclosed.*SSL.*")
@@ -12,42 +18,130 @@ try:
 except Exception as e:
     raise RuntimeError(f"Chromadb tidak tersedia: {e}")
 
+
+def _rag_retry_with_backoff(func, *args, max_retries=3, base_delay=0.5, **kwargs):
+    """
+    Enhanced retry function with exponential backoff for RAG operations.
+
+    Args:
+        func: Function to retry
+        max_retries: Maximum number of retries
+        base_delay: Base delay in seconds
+        *args, **kwargs: Arguments to pass to function
+
+    Returns:
+        Function result if successful
+
+    Raises:
+        RuntimeError: If all retries fail
+    """
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            result = func(*args, **kwargs)
+            if attempt > 0:
+                logger.info(f"RAG operation succeeded after {attempt} retries")
+            return result
+
+        except Exception as e:
+            last_exception = e
+            error_str = str(e).lower()
+
+            # ChromaDB specific error patterns
+            is_retryable = (
+                "connection" in error_str or
+                "timeout" in error_str or
+                "unavailable" in error_str or
+                "busy" in error_str or
+                "overloaded" in error_str or
+                "failed to" in error_str or
+                "i/o" in error_str or
+                "permission" in error_str or
+                "disk" in error_str or
+                "memory" in error_str or
+                "invalid collection" in error_str
+            )
+
+            if not is_retryable:
+                logger.error(f"Non-retryable RAG error: {e}")
+                raise RuntimeError(f"RAG operation failed with non-retryable error: {str(e)}")
+
+            if attempt == max_retries:
+                logger.error(f"Max retries ({max_retries}) reached for RAG operation")
+                raise RuntimeError(f"RAG operation failed after {max_retries} retries: {str(e)}")
+
+            # Calculate exponential backoff with jitter
+            delay = base_delay * (2 ** attempt) + random.uniform(0.2, 0.8)
+            delay = min(delay, 15)  # Cap at 15 seconds
+
+            logger.warning(f"RAG operation failed (attempt {attempt + 1}/{max_retries + 1}), retrying in {delay:.2f}s: {e}")
+            time.sleep(delay)
+
+    raise RuntimeError(f"RAG operation failed after {max_retries} retries. Last error: {last_exception}")
+
 # Lokasi penyimpanan ChromaDB (persist)
 RAG_DIR = os.path.join(os.path.dirname(__file__), "uploads", "chroma")
 os.makedirs(RAG_DIR, exist_ok=True)
 
-# Initialize ChromaDB with fallback for schema issues
+# Initialize ChromaDB with retry mechanism
+def _initialize_chromadb():
+    """Initialize ChromaDB with retry and recovery mechanisms"""
+    try:
+        client = chromadb.PersistentClient(path=RAG_DIR)
+        embedder = embedding_functions.DefaultEmbeddingFunction()
+        collection = client.get_or_create_collection(
+            name="system_docs", embedding_function=embedder
+        )
+        logger.info("ChromaDB initialized successfully")
+        return client, embedder, collection
+    except Exception as e:
+        logger.error(f"ChromaDB initialization failed: {e}")
+        logger.info("Attempting to reset ChromaDB storage...")
+
+        # Reset ChromaDB if schema incompatible
+        import shutil
+
+        if os.path.exists(RAG_DIR):
+            try:
+                shutil.rmtree(RAG_DIR)
+                os.makedirs(RAG_DIR, exist_ok=True)
+                logger.info("ChromaDB storage reset successfully")
+            except Exception as reset_error:
+                logger.error(f"Failed to reset ChromaDB storage: {reset_error}")
+                raise RuntimeError(f"ChromaDB initialization and reset both failed: {e}, {reset_error}")
+
+        # Re-initialize after reset
+        client = chromadb.PersistentClient(path=RAG_DIR)
+        embedder = embedding_functions.DefaultEmbeddingFunction()
+        collection = client.get_or_create_collection(
+            name="system_docs", embedding_function=embedder
+        )
+        logger.info("ChromaDB reinitialized successfully after reset")
+        return client, embedder, collection
+
 try:
-    _client = chromadb.PersistentClient(path=RAG_DIR)
-    _embedder = embedding_functions.DefaultEmbeddingFunction()
-    _collection = _client.get_or_create_collection(
-        name="system_docs", embedding_function=_embedder
+    _client, _embedder, _collection = _rag_retry_with_backoff(
+        _initialize_chromadb,
+        max_retries=3,
+        base_delay=1.0
     )
+    logger.info("ChromaDB initialization completed with retry mechanism")
 except Exception as e:
-    print(f"Warning: ChromaDB initialization failed: {e}")
-    print("Attempting to reset ChromaDB storage...")
-
-    # Reset ChromaDB if schema incompatible
-    import shutil
-
-    if os.path.exists(RAG_DIR):
-        shutil.rmtree(RAG_DIR)
-        os.makedirs(RAG_DIR, exist_ok=True)
-
-    # Re-initialize
-    _client = chromadb.PersistentClient(path=RAG_DIR)
-    _embedder = embedding_functions.DefaultEmbeddingFunction()
-    _collection = _client.get_or_create_collection(
-        name="system_docs", embedding_function=_embedder
-    )
-    print("ChromaDB reinitialized successfully")
+    logger.error(f"Failed to initialize ChromaDB after retries: {e}")
+    raise RuntimeError(f"ChromaDB initialization failed after multiple attempts: {str(e)}")
 
 
 def ingest_text(doc_id: str, text: str, metadata: Dict[str, Any] | None = None) -> None:
-    """Ingest plain text ke koleksi Chroma dengan id unik."""
+    """Ingest plain text ke koleksi Chroma dengan id unik dan retry mechanism."""
     if not text:
         return
-    _collection.add(documents=[text], metadatas=[metadata or {}], ids=[doc_id])
+
+    def _ingest_operation():
+        _collection.add(documents=[text], metadatas=[metadata or {}], ids=[doc_id])
+        return True
+
+    return _rag_retry_with_backoff(_ingest_operation, max_retries=3, base_delay=0.8)
 
 
 def ingest_file(
@@ -127,23 +221,27 @@ def has_id(doc_id: str) -> bool:
 
 
 def query(query_text: str, n_results: int = 5) -> List[Dict[str, Any]]:
-    """Query dokumen relevan dari koleksi."""
+    """Query dokumen relevan dari koleksi dengan retry mechanism."""
     if not query_text:
         return []
-    res = _collection.query(query_texts=[query_text], n_results=n_results)
-    docs = []
-    for i, d in enumerate(res.get("documents", [[]])[0]):
-        docs.append(
-            {
-                "document": d,
-                "metadata": res.get("metadatas", [[]])[0][i],
-                "id": res.get("ids", [[]])[0][i],
-                "distance": res.get("distances", [[]])[0][i]
-                if "distances" in res
-                else None,
-            }
-        )
-    return docs
+
+    def _query_operation():
+        res = _collection.query(query_texts=[query_text], n_results=n_results)
+        docs = []
+        for i, d in enumerate(res.get("documents", [[]])[0]):
+            docs.append(
+                {
+                    "document": d,
+                    "metadata": res.get("metadatas", [[]])[0][i],
+                    "id": res.get("ids", [[]])[0][i],
+                    "distance": res.get("distances", [[]])[0][i]
+                    if "distances" in res
+                    else None,
+                }
+            )
+        return docs
+
+    return _rag_retry_with_backoff(_query_operation, max_retries=4, base_delay=0.5)
 
 
 def test_rag_query() -> bool:
